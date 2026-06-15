@@ -5,8 +5,8 @@ package api
 import (
 	json "encoding/json"
 	fmt "fmt"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
 	big "math/big"
-	internal "sdk/internal"
 )
 
 var (

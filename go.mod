@@ -1,4 +1,4 @@
-module sdk
+module github.com/YasminaAI/motor-go-sdk
 
 go 1.21
 

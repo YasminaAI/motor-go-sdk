@@ -5,10 +5,11 @@ package policies
 import (
 	context "context"
 	http "net/http"
-	sdk "sdk"
-	core "sdk/core"
-	internal "sdk/internal"
-	option "sdk/option"
+
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 type RawClient struct {
@@ -33,9 +34,9 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) ShowPolicy(
 	ctx context.Context,
-	request *sdk.GetPoliciesCarPolicyRequest,
+	request *motorgosdk.GetPoliciesCarPolicyRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*sdk.Policy], error) {
+) (*core.Response[*motorgosdk.Policy], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -50,7 +51,7 @@ func (r *RawClient) ShowPolicy(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *sdk.Policy
+	var response *motorgosdk.Policy
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -68,7 +69,7 @@ func (r *RawClient) ShowPolicy(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sdk.Policy]{
+	return &core.Response[*motorgosdk.Policy]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -77,9 +78,9 @@ func (r *RawClient) ShowPolicy(
 
 func (r *RawClient) ListPolicies(
 	ctx context.Context,
-	request *sdk.GetPoliciesRequest,
+	request *motorgosdk.GetPoliciesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[[]*sdk.Policy], error) {
+) (*core.Response[[]*motorgosdk.Policy], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -98,7 +99,7 @@ func (r *RawClient) ListPolicies(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response []*sdk.Policy
+	var response []*motorgosdk.Policy
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -111,13 +112,13 @@ func (r *RawClient) ListPolicies(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[[]*sdk.Policy]{
+	return &core.Response[[]*motorgosdk.Policy]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -126,9 +127,9 @@ func (r *RawClient) ListPolicies(
 
 func (r *RawClient) IssuePolicy(
 	ctx context.Context,
-	request *sdk.PostPoliciesRequest,
+	request *motorgosdk.PostPoliciesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*sdk.Policy], error) {
+) (*core.Response[*motorgosdk.Policy], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -141,7 +142,7 @@ func (r *RawClient) IssuePolicy(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *sdk.Policy
+	var response *motorgosdk.Policy
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -155,13 +156,13 @@ func (r *RawClient) IssuePolicy(
 			Client:          options.HTTPClient,
 			Request:         request,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sdk.Policy]{
+	return &core.Response[*motorgosdk.Policy]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

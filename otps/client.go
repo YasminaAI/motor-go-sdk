@@ -4,10 +4,11 @@ package otps
 
 import (
 	context "context"
-	sdk "sdk"
-	core "sdk/core"
-	internal "sdk/internal"
-	option "sdk/option"
+
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 type Client struct {
@@ -36,7 +37,7 @@ func NewClient(options *core.RequestOptions) *Client {
 // This endpoint sends a one-time password (OTP) to the provided email and phone number for quote verification. It should be called before creating a quote request.
 func (c *Client) RequestOtpForQuoteVerification(
 	ctx context.Context,
-	request *sdk.PostQuoteOtpRequest,
+	request *motorgosdk.PostQuoteOtpRequest,
 	opts ...option.RequestOption,
 ) error {
 	_, err := c.WithRawResponse.RequestOtpForQuoteVerification(
@@ -53,7 +54,7 @@ func (c *Client) RequestOtpForQuoteVerification(
 // This endpoint sends a one-time password (OTP). It should be called before issuing a policy.
 func (c *Client) RequestOtpForIssuingPolicy(
 	ctx context.Context,
-	request *sdk.PostIssueOtpRequest,
+	request *motorgosdk.PostIssueOtpRequest,
 	opts ...option.RequestOption,
 ) error {
 	_, err := c.WithRawResponse.RequestOtpForIssuingPolicy(

@@ -8,11 +8,11 @@ import (
 	json "encoding/json"
 	http "net/http"
 	os "os"
-	sdk "sdk"
-	client "sdk/client"
-	option "sdk/option"
 	testing "testing"
 
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	client "github.com/YasminaAI/motor-go-sdk/client"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 	require "github.com/stretchr/testify/require"
 )
 
@@ -88,7 +88,7 @@ func TestOtPsRequestOtpForQuoteVerificationWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.PostQuoteOtpRequest{
+	request := &motorgosdk.PostQuoteOtpRequest{
 		Email:   "someone@example.com",
 		Phone:   "0501234567",
 		OwnerID: "1012345678",
@@ -116,7 +116,7 @@ func TestOtPsRequestOtpForIssuingPolicyWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.PostIssueOtpRequest{
+	request := &motorgosdk.PostIssueOtpRequest{
 		Email:            "someone@example.com",
 		Phone:            "0501234567",
 		OwnerID:          "1012345678",

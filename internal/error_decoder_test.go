@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/YasminaAI/motor-go-sdk/core"
 	"github.com/stretchr/testify/assert"
-	"sdk/core"
 )
 
 func TestErrorDecoder(t *testing.T) {

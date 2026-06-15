@@ -8,11 +8,11 @@ import (
 	json "encoding/json"
 	http "net/http"
 	os "os"
-	sdk "sdk"
-	client "sdk/client"
-	option "sdk/option"
 	testing "testing"
 
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	client "github.com/YasminaAI/motor-go-sdk/client"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 	require "github.com/stretchr/testify/require"
 )
 
@@ -88,7 +88,7 @@ func TestPoliciesShowPolicyWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.GetPoliciesCarPolicyRequest{
+	request := &motorgosdk.GetPoliciesCarPolicyRequest{
 		CarPolicy: 1,
 	}
 	_, invocationErr := client.Policies.ShowPolicy(
@@ -114,7 +114,7 @@ func TestPoliciesListPoliciesWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.GetPoliciesRequest{}
+	request := &motorgosdk.GetPoliciesRequest{}
 	_, invocationErr := client.Policies.ListPolicies(
 		context.TODO(),
 		request,
@@ -138,7 +138,7 @@ func TestPoliciesIssuePolicyWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.PostPoliciesRequest{
+	request := &motorgosdk.PostPoliciesRequest{
 		QuoteRequestID:   123,
 		QuoteReferenceID: "550e8400-e29b-41d4-a716-446655440000",
 		QuotePriceID:     "550e8400-e29b-41d4-a716-446655440001",
