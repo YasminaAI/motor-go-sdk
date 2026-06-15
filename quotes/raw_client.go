@@ -5,10 +5,11 @@ package quotes
 import (
 	context "context"
 	http "net/http"
-	sdk "sdk"
-	core "sdk/core"
-	internal "sdk/internal"
-	option "sdk/option"
+
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 type RawClient struct {
@@ -33,9 +34,9 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) ShowQuote(
 	ctx context.Context,
-	request *sdk.GetQuoteRequestsIDRequest,
+	request *motorgosdk.GetQuoteRequestsIDRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*sdk.QuoteResponse], error) {
+) (*core.Response[*motorgosdk.QuoteResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -50,7 +51,7 @@ func (r *RawClient) ShowQuote(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *sdk.QuoteResponse
+	var response *motorgosdk.QuoteResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -63,13 +64,13 @@ func (r *RawClient) ShowQuote(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sdk.QuoteResponse]{
+	return &core.Response[*motorgosdk.QuoteResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -78,9 +79,9 @@ func (r *RawClient) ShowQuote(
 
 func (r *RawClient) DeleteQuote(
 	ctx context.Context,
-	request *sdk.DeleteQuoteRequestsIDRequest,
+	request *motorgosdk.DeleteQuoteRequestsIDRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*sdk.DeleteQuoteRequestsIDResponse], error) {
+) (*core.Response[*motorgosdk.DeleteQuoteRequestsIDResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -95,7 +96,7 @@ func (r *RawClient) DeleteQuote(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *sdk.DeleteQuoteRequestsIDResponse
+	var response *motorgosdk.DeleteQuoteRequestsIDResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -108,13 +109,13 @@ func (r *RawClient) DeleteQuote(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sdk.DeleteQuoteRequestsIDResponse]{
+	return &core.Response[*motorgosdk.DeleteQuoteRequestsIDResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -124,7 +125,7 @@ func (r *RawClient) DeleteQuote(
 func (r *RawClient) ListQuotes(
 	ctx context.Context,
 	opts ...option.RequestOption,
-) (*core.Response[*sdk.GetQuoteRequestsResponse], error) {
+) (*core.Response[*motorgosdk.GetQuoteRequestsResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -136,7 +137,7 @@ func (r *RawClient) ListQuotes(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *sdk.GetQuoteRequestsResponse
+	var response *motorgosdk.GetQuoteRequestsResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -154,7 +155,7 @@ func (r *RawClient) ListQuotes(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sdk.GetQuoteRequestsResponse]{
+	return &core.Response[*motorgosdk.GetQuoteRequestsResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -163,9 +164,9 @@ func (r *RawClient) ListQuotes(
 
 func (r *RawClient) RequestQuotes(
 	ctx context.Context,
-	request *sdk.PostQuoteRequestsRequest,
+	request *motorgosdk.PostQuoteRequestsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*sdk.QuoteResponse], error) {
+) (*core.Response[*motorgosdk.QuoteResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -178,7 +179,7 @@ func (r *RawClient) RequestQuotes(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *sdk.QuoteResponse
+	var response *motorgosdk.QuoteResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -192,13 +193,13 @@ func (r *RawClient) RequestQuotes(
 			Client:          options.HTTPClient,
 			Request:         request,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sdk.QuoteResponse]{
+	return &core.Response[*motorgosdk.QuoteResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

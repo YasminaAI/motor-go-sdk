@@ -3,8 +3,8 @@
 package api
 
 import (
-	core "sdk/core"
-	internal "sdk/internal"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
 )
 
 var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{

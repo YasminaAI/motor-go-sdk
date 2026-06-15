@@ -5,10 +5,11 @@ package otps
 import (
 	context "context"
 	http "net/http"
-	sdk "sdk"
-	core "sdk/core"
-	internal "sdk/internal"
-	option "sdk/option"
+
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 type RawClient struct {
@@ -33,7 +34,7 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) RequestOtpForQuoteVerification(
 	ctx context.Context,
-	request *sdk.PostQuoteOtpRequest,
+	request *motorgosdk.PostQuoteOtpRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[any], error) {
 	options := core.NewRequestOptions(opts...)
@@ -60,7 +61,7 @@ func (r *RawClient) RequestOtpForQuoteVerification(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Request:         request,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
@@ -75,7 +76,7 @@ func (r *RawClient) RequestOtpForQuoteVerification(
 
 func (r *RawClient) RequestOtpForIssuingPolicy(
 	ctx context.Context,
-	request *sdk.PostIssueOtpRequest,
+	request *motorgosdk.PostIssueOtpRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[any], error) {
 	options := core.NewRequestOptions(opts...)
@@ -102,7 +103,7 @@ func (r *RawClient) RequestOtpForIssuingPolicy(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Request:         request,
-			ErrorDecoder:    internal.NewErrorDecoder(sdk.ErrorCodes),
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {

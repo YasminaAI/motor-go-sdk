@@ -4,10 +4,11 @@ package policies
 
 import (
 	context "context"
-	sdk "sdk"
-	core "sdk/core"
-	internal "sdk/internal"
-	option "sdk/option"
+
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 type Client struct {
@@ -36,9 +37,9 @@ func NewClient(options *core.RequestOptions) *Client {
 // Show a specific policy
 func (c *Client) ShowPolicy(
 	ctx context.Context,
-	request *sdk.GetPoliciesCarPolicyRequest,
+	request *motorgosdk.GetPoliciesCarPolicyRequest,
 	opts ...option.RequestOption,
-) (*sdk.Policy, error) {
+) (*motorgosdk.Policy, error) {
 	response, err := c.WithRawResponse.ShowPolicy(
 		ctx,
 		request,
@@ -53,9 +54,9 @@ func (c *Client) ShowPolicy(
 // Listing requested policies
 func (c *Client) ListPolicies(
 	ctx context.Context,
-	request *sdk.GetPoliciesRequest,
+	request *motorgosdk.GetPoliciesRequest,
 	opts ...option.RequestOption,
-) ([]*sdk.Policy, error) {
+) ([]*motorgosdk.Policy, error) {
 	response, err := c.WithRawResponse.ListPolicies(
 		ctx,
 		request,
@@ -70,9 +71,9 @@ func (c *Client) ListPolicies(
 // For issuing a new policy
 func (c *Client) IssuePolicy(
 	ctx context.Context,
-	request *sdk.PostPoliciesRequest,
+	request *motorgosdk.PostPoliciesRequest,
 	opts ...option.RequestOption,
-) (*sdk.Policy, error) {
+) (*motorgosdk.Policy, error) {
 	response, err := c.WithRawResponse.IssuePolicy(
 		ctx,
 		request,

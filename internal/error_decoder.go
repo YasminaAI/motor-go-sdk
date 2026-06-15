@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"sdk/core"
+	"github.com/YasminaAI/motor-go-sdk/core"
 )
 
 // ErrorCodes maps HTTP status codes to error constructors.

@@ -1,6 +1,6 @@
 # Reference
 ## Quotes
-<details><summary><code>client.Quotes.ShowQuote(ID) -> *sdk.QuoteResponse</code></summary>
+<details><summary><code>client.Quotes.ShowQuote(ID) -> *motorgosdk.QuoteResponse</code></summary>
 <dl>
 <dd>
 
@@ -13,7 +13,7 @@
 <dd>
 
 ```go
-request := &sdk.GetQuoteRequestsIDRequest{
+request := &motorgosdk.GetQuoteRequestsIDRequest{
         ID: 1,
     }
 client.Quotes.ShowQuote(
@@ -47,7 +47,7 @@ client.Quotes.ShowQuote(
 </dl>
 </details>
 
-<details><summary><code>client.Quotes.DeleteQuote(ID) -> *sdk.DeleteQuoteRequestsIDResponse</code></summary>
+<details><summary><code>client.Quotes.DeleteQuote(ID) -> *motorgosdk.DeleteQuoteRequestsIDResponse</code></summary>
 <dl>
 <dd>
 
@@ -60,7 +60,7 @@ client.Quotes.ShowQuote(
 <dd>
 
 ```go
-request := &sdk.DeleteQuoteRequestsIDRequest{
+request := &motorgosdk.DeleteQuoteRequestsIDRequest{
         ID: 1,
     }
 client.Quotes.DeleteQuote(
@@ -94,7 +94,7 @@ client.Quotes.DeleteQuote(
 </dl>
 </details>
 
-<details><summary><code>client.Quotes.ListQuotes() -> *sdk.GetQuoteRequestsResponse</code></summary>
+<details><summary><code>client.Quotes.ListQuotes() -> *motorgosdk.GetQuoteRequestsResponse</code></summary>
 <dl>
 <dd>
 
@@ -122,7 +122,7 @@ client.Quotes.ListQuotes(
 </dl>
 </details>
 
-<details><summary><code>client.Quotes.RequestQuotes(request) -> *sdk.QuoteResponse</code></summary>
+<details><summary><code>client.Quotes.RequestQuotes(request) -> *motorgosdk.QuoteResponse</code></summary>
 <dl>
 <dd>
 
@@ -150,10 +150,10 @@ The Quote IDs can be used later to issue a policy
 <dd>
 
 ```go
-request := &sdk.PostQuoteRequestsRequest{
+request := &motorgosdk.PostQuoteRequestsRequest{
         OwnerID: "owner_id",
         Phone: "phone",
-        Birthdate: sdk.MustParseDate(
+        Birthdate: motorgosdk.MustParseDate(
             "2023-01-15",
         ),
         CarSequenceNumber: "car_sequence_number",
@@ -258,7 +258,7 @@ client.Quotes.RequestQuotes(
 <dl>
 <dd>
 
-**drivers:** `[]*sdk.PostQuoteRequestsRequestDriversItem` — List of drivers for the vehicle. When provided, the sum of all driving_percentage values must equal 100, and the owner must be included among the drivers.
+**drivers:** `[]*motorgosdk.PostQuoteRequestsRequestDriversItem` — List of drivers for the vehicle. When provided, the sum of all driving_percentage values must equal 100, and the owner must be included among the drivers.
     
 </dd>
 </dl>
@@ -271,7 +271,7 @@ client.Quotes.RequestQuotes(
 </details>
 
 ## Policies
-<details><summary><code>client.Policies.ShowPolicy(CarPolicy) -> *sdk.Policy</code></summary>
+<details><summary><code>client.Policies.ShowPolicy(CarPolicy) -> *motorgosdk.Policy</code></summary>
 <dl>
 <dd>
 
@@ -298,7 +298,7 @@ Show a specific policy
 <dd>
 
 ```go
-request := &sdk.GetPoliciesCarPolicyRequest{
+request := &motorgosdk.GetPoliciesCarPolicyRequest{
         CarPolicy: 1,
     }
 client.Policies.ShowPolicy(
@@ -332,7 +332,7 @@ client.Policies.ShowPolicy(
 </dl>
 </details>
 
-<details><summary><code>client.Policies.ListPolicies() -> []*sdk.Policy</code></summary>
+<details><summary><code>client.Policies.ListPolicies() -> []*motorgosdk.Policy</code></summary>
 <dl>
 <dd>
 
@@ -359,7 +359,7 @@ Listing requested policies
 <dd>
 
 ```go
-request := &sdk.GetPoliciesRequest{}
+request := &motorgosdk.GetPoliciesRequest{}
 client.Policies.ListPolicies(
         context.TODO(),
         request,
@@ -463,7 +463,7 @@ client.Policies.ListPolicies(
 </dl>
 </details>
 
-<details><summary><code>client.Policies.IssuePolicy(request) -> *sdk.Policy</code></summary>
+<details><summary><code>client.Policies.IssuePolicy(request) -> *motorgosdk.Policy</code></summary>
 <dl>
 <dd>
 
@@ -490,7 +490,7 @@ For issuing a new policy
 <dd>
 
 ```go
-request := &sdk.PostPoliciesRequest{
+request := &motorgosdk.PostPoliciesRequest{
         QuoteRequestID: 123,
         QuoteReferenceID: "550e8400-e29b-41d4-a716-446655440000",
         QuotePriceID: "550e8400-e29b-41d4-a716-446655440001",
@@ -586,7 +586,7 @@ This endpoint sends a one-time password (OTP) to the provided email and phone nu
 <dd>
 
 ```go
-request := &sdk.PostQuoteOtpRequest{
+request := &motorgosdk.PostQuoteOtpRequest{
         Email: "someone@example.com",
         Phone: "0501234567",
         OwnerID: "1012345678",
@@ -665,7 +665,7 @@ This endpoint sends a one-time password (OTP). It should be called before issuin
 <dd>
 
 ```go
-request := &sdk.PostIssueOtpRequest{
+request := &motorgosdk.PostIssueOtpRequest{
         Email: "someone@example.com",
         Phone: "0501234567",
         OwnerID: "1012345678",

@@ -31,9 +31,10 @@ package example
 
 import (
     context "context"
-    sdk "sdk"
-    client "sdk/client"
-    option "sdk/option"
+
+    motorgosdk "github.com/YasminaAI/motor-go-sdk"
+    client "github.com/YasminaAI/motor-go-sdk/client"
+    option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 func do() {
@@ -42,10 +43,10 @@ func do() {
             "<token>",
         ),
     )
-    request := &sdk.PostQuoteRequestsRequest{
+    request := &motorgosdk.PostQuoteRequestsRequest{
         OwnerID: "owner_id",
         Phone: "phone",
-        Birthdate: sdk.MustParseDate(
+        Birthdate: motorgosdk.MustParseDate(
             "2023-01-15",
         ),
         CarSequenceNumber: "car_sequence_number",

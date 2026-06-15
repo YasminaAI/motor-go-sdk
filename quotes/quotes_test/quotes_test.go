@@ -8,11 +8,11 @@ import (
 	json "encoding/json"
 	http "net/http"
 	os "os"
-	sdk "sdk"
-	client "sdk/client"
-	option "sdk/option"
 	testing "testing"
 
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	client "github.com/YasminaAI/motor-go-sdk/client"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 	require "github.com/stretchr/testify/require"
 )
 
@@ -88,7 +88,7 @@ func TestQuotesShowQuoteWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.GetQuoteRequestsIDRequest{
+	request := &motorgosdk.GetQuoteRequestsIDRequest{
 		ID: 1,
 	}
 	_, invocationErr := client.Quotes.ShowQuote(
@@ -114,7 +114,7 @@ func TestQuotesDeleteQuoteWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.DeleteQuoteRequestsIDRequest{
+	request := &motorgosdk.DeleteQuoteRequestsIDRequest{
 		ID: 1,
 	}
 	_, invocationErr := client.Quotes.DeleteQuote(
@@ -162,10 +162,10 @@ func TestQuotesRequestQuotesWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &sdk.PostQuoteRequestsRequest{
+	request := &motorgosdk.PostQuoteRequestsRequest{
 		OwnerID: "owner_id",
 		Phone:   "phone",
-		Birthdate: sdk.MustParseDate(
+		Birthdate: motorgosdk.MustParseDate(
 			"2023-01-15",
 		),
 		CarSequenceNumber: "car_sequence_number",

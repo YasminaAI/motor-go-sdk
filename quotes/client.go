@@ -4,10 +4,11 @@ package quotes
 
 import (
 	context "context"
-	sdk "sdk"
-	core "sdk/core"
-	internal "sdk/internal"
-	option "sdk/option"
+
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 )
 
 type Client struct {
@@ -35,9 +36,9 @@ func NewClient(options *core.RequestOptions) *Client {
 
 func (c *Client) ShowQuote(
 	ctx context.Context,
-	request *sdk.GetQuoteRequestsIDRequest,
+	request *motorgosdk.GetQuoteRequestsIDRequest,
 	opts ...option.RequestOption,
-) (*sdk.QuoteResponse, error) {
+) (*motorgosdk.QuoteResponse, error) {
 	response, err := c.WithRawResponse.ShowQuote(
 		ctx,
 		request,
@@ -51,9 +52,9 @@ func (c *Client) ShowQuote(
 
 func (c *Client) DeleteQuote(
 	ctx context.Context,
-	request *sdk.DeleteQuoteRequestsIDRequest,
+	request *motorgosdk.DeleteQuoteRequestsIDRequest,
 	opts ...option.RequestOption,
-) (*sdk.DeleteQuoteRequestsIDResponse, error) {
+) (*motorgosdk.DeleteQuoteRequestsIDResponse, error) {
 	response, err := c.WithRawResponse.DeleteQuote(
 		ctx,
 		request,
@@ -68,7 +69,7 @@ func (c *Client) DeleteQuote(
 func (c *Client) ListQuotes(
 	ctx context.Context,
 	opts ...option.RequestOption,
-) (*sdk.GetQuoteRequestsResponse, error) {
+) (*motorgosdk.GetQuoteRequestsResponse, error) {
 	response, err := c.WithRawResponse.ListQuotes(
 		ctx,
 		opts...,
@@ -83,9 +84,9 @@ func (c *Client) ListQuotes(
 // The Quote IDs can be used later to issue a policy
 func (c *Client) RequestQuotes(
 	ctx context.Context,
-	request *sdk.PostQuoteRequestsRequest,
+	request *motorgosdk.PostQuoteRequestsRequest,
 	opts ...option.RequestOption,
-) (*sdk.QuoteResponse, error) {
+) (*motorgosdk.QuoteResponse, error) {
 	response, err := c.WithRawResponse.RequestQuotes(
 		ctx,
 		request,
