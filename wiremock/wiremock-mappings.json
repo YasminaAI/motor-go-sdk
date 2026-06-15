@@ -1,0 +1,303 @@
+{
+  "mappings": [
+    {
+      "id": "41cd60b2-f53d-4a50-bf5a-185dd495d171",
+      "name": "Show quote - default",
+      "request": {
+        "urlPathTemplate": "/quote-requests/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"owner_id\": 1,\n  \"phone\": \"phone\",\n  \"birthdate\": \"2023-01-15\",\n  \"car_sequence_number\": 1,\n  \"is_ownership_transfer\": true,\n  \"car_estimated_cost\": 1.1,\n  \"car_model_year\": 1,\n  \"start_date\": \"2023-01-15\",\n  \"drivers\": [\n    {\n      \"owner_id\": \"owner_id\",\n      \"birthdate\": \"2023-01-15\",\n      \"driving_percentage\": 1\n    }\n  ],\n  \"quotes\": [\n    {\n      \"company_name\": \"company_name\",\n      \"prices\": [\n        {\n          \"vat_percentage\": 15\n        }\n      ],\n      \"benefits\": [\n        {}\n      ]\n    }\n  ],\n  \"client_id\": \"client_id\",\n  \"updated_at\": \"2024-01-15T09:30:00Z\",\n  \"created_at\": \"2024-01-15T09:30:00Z\",\n  \"id\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "41cd60b2-f53d-4a50-bf5a-185dd495d171",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "31700fd8-d060-4aeb-b258-d2deb016127d",
+      "name": "Delete quote - default",
+      "request": {
+        "urlPathTemplate": "/quote-requests/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"message\": \"Quote deleted successfully.\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "31700fd8-d060-4aeb-b258-d2deb016127d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2900f20f-4588-44b8-821a-d90d8132f794",
+      "name": "List quotes - default",
+      "request": {
+        "urlPathTemplate": "/quote-requests",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"current_page\": 1,\n  \"data\": [\n    {\n      \"owner_id\": 1,\n      \"phone\": \"phone\",\n      \"birthdate\": \"2023-01-15\",\n      \"car_sequence_number\": 1,\n      \"is_ownership_transfer\": true,\n      \"car_estimated_cost\": 1.1,\n      \"car_model_year\": 1,\n      \"start_date\": \"2023-01-15\",\n      \"drivers\": [\n        {}\n      ],\n      \"quotes\": [\n        {\n          \"prices\": [\n            {\n              \"vat_percentage\": 15\n            }\n          ]\n        }\n      ],\n      \"client_id\": \"client_id\",\n      \"updated_at\": \"2024-01-15T09:30:00Z\",\n      \"created_at\": \"2024-01-15T09:30:00Z\",\n      \"id\": 1\n    }\n  ],\n  \"first_page_url\": \"first_page_url\",\n  \"from\": 1,\n  \"last_page\": 1,\n  \"last_page_url\": \"last_page_url\",\n  \"links\": [\n    {\n      \"url\": \"url\",\n      \"label\": \"label\",\n      \"active\": true\n    }\n  ],\n  \"next_page_url\": \"next_page_url\",\n  \"path\": \"path\",\n  \"per_page\": 1,\n  \"prev_page_url\": \"prev_page_url\",\n  \"to\": 1,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2900f20f-4588-44b8-821a-d90d8132f794",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "872842fc-b983-4b26-b6ef-8f33533bf9a8",
+      "name": "Request quotes - default",
+      "request": {
+        "urlPathTemplate": "/quote-requests",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"owner_id\": 1,\n  \"phone\": \"phone\",\n  \"birthdate\": \"2023-01-15\",\n  \"car_sequence_number\": 1,\n  \"is_ownership_transfer\": true,\n  \"car_estimated_cost\": 1.1,\n  \"car_model_year\": 1,\n  \"start_date\": \"2023-01-15\",\n  \"drivers\": [\n    {\n      \"owner_id\": \"owner_id\",\n      \"birthdate\": \"2023-01-15\",\n      \"driving_percentage\": 1\n    }\n  ],\n  \"quotes\": [\n    {\n      \"company_name\": \"company_name\",\n      \"prices\": [\n        {\n          \"vat_percentage\": 15\n        }\n      ],\n      \"benefits\": [\n        {}\n      ]\n    }\n  ],\n  \"client_id\": \"client_id\",\n  \"updated_at\": \"2024-01-15T09:30:00Z\",\n  \"created_at\": \"2024-01-15T09:30:00Z\",\n  \"id\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "872842fc-b983-4b26-b6ef-8f33533bf9a8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "4fcb75c8-a311-4e20-a883-a6c1b86cfbd9",
+      "name": "Show policy - default",
+      "request": {
+        "urlPathTemplate": "/policies/{carPolicy}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "carPolicy": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"id\": 1,\n  \"meta_data\": {\n    \"key\": \"value\"\n  },\n  \"start_date\": \"start_date\",\n  \"provider_policy_id\": 1,\n  \"provider_policy\": \"provider_policy\",\n  \"order_status\": 1,\n  \"approval_status\": 1,\n  \"end_date\": \"end_date\",\n  \"is_claimed\": true,\n  \"created_at\": \"created_at\",\n  \"updated_at\": \"updated_at\",\n  \"client_id\": \"client_id\",\n  \"canceled_at\": \"canceled_at\",\n  \"invoice\": \"invoice\",\n  \"cancellation_document\": \"cancellation_document\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4fcb75c8-a311-4e20-a883-a6c1b86cfbd9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "634804e1-b78a-4414-bfb8-ecb4c6059afd",
+      "name": "List policies - default",
+      "request": {
+        "urlPathTemplate": "/policies",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[\n  {\n    \"id\": 1,\n    \"meta_data\": {\n      \"key\": \"value\"\n    },\n    \"start_date\": \"start_date\",\n    \"provider_policy_id\": 1,\n    \"provider_policy\": \"provider_policy\",\n    \"order_status\": 1,\n    \"approval_status\": 1,\n    \"end_date\": \"end_date\",\n    \"is_claimed\": true,\n    \"created_at\": \"created_at\",\n    \"updated_at\": \"updated_at\",\n    \"client_id\": \"client_id\",\n    \"canceled_at\": \"canceled_at\",\n    \"invoice\": \"invoice\",\n    \"cancellation_document\": \"cancellation_document\"\n  }\n]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "634804e1-b78a-4414-bfb8-ecb4c6059afd",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "900467d2-dbd3-42f4-98f9-704c2e8a717a",
+      "name": "Issue policy - default",
+      "request": {
+        "urlPathTemplate": "/policies",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"id\": 1,\n  \"meta_data\": {\n    \"key\": \"value\"\n  },\n  \"start_date\": \"start_date\",\n  \"provider_policy_id\": 1,\n  \"provider_policy\": \"provider_policy\",\n  \"order_status\": 1,\n  \"approval_status\": 1,\n  \"end_date\": \"end_date\",\n  \"is_claimed\": true,\n  \"created_at\": \"created_at\",\n  \"updated_at\": \"updated_at\",\n  \"client_id\": \"client_id\",\n  \"canceled_at\": \"canceled_at\",\n  \"invoice\": \"invoice\",\n  \"cancellation_document\": \"cancellation_document\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "900467d2-dbd3-42f4-98f9-704c2e8a717a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "64ae575e-45af-4989-8a24-426d238353c4",
+      "name": "Request OTP for quote verification - default",
+      "request": {
+        "urlPathTemplate": "/quote-otp",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "64ae575e-45af-4989-8a24-426d238353c4",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "1fc52b3f-eded-42f7-ae4e-7bcd991cc4af",
+      "name": "Request OTP for Issuing Policy - default",
+      "request": {
+        "urlPathTemplate": "/issue-otp",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1fc52b3f-eded-42f7-ae4e-7bcd991cc4af",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "total": 9
+  }
+}
