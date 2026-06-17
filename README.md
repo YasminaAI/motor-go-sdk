@@ -44,12 +44,12 @@ func do() {
         ),
     )
     request := &motorgosdk.PostQuoteRequestsRequest{
+        Otp: "123456",
         OwnerID: "owner_id",
         Phone: "phone",
         Birthdate: motorgosdk.MustParseDate(
             "2023-01-15",
         ),
-        CarSequenceNumber: "car_sequence_number",
         CarEstimatedCost: 1.1,
     }
     client.Quotes.RequestQuotes(
@@ -66,7 +66,7 @@ URL, which is particularly useful in test environments.
 
 ```go
 client := client.NewClient(
-    option.WithBaseURL(api.Environments.Default),
+    option.WithBaseURL(api.Environments.Sandbox),
 )
 ```
 

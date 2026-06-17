@@ -36,20 +36,83 @@ func (d *DeleteQuoteRequestsIDRequest) SetID(id int) {
 }
 
 var (
-	postQuoteRequestsRequestFieldOwnerID             = big.NewInt(1 << 0)
-	postQuoteRequestsRequestFieldEmail               = big.NewInt(1 << 1)
-	postQuoteRequestsRequestFieldPhone               = big.NewInt(1 << 2)
-	postQuoteRequestsRequestFieldBirthdate           = big.NewInt(1 << 3)
-	postQuoteRequestsRequestFieldCarSequenceNumber   = big.NewInt(1 << 4)
-	postQuoteRequestsRequestFieldIsOwnershipTransfer = big.NewInt(1 << 5)
-	postQuoteRequestsRequestFieldCurrentCarOwnerID   = big.NewInt(1 << 6)
-	postQuoteRequestsRequestFieldCarEstimatedCost    = big.NewInt(1 << 7)
-	postQuoteRequestsRequestFieldCarModelYear        = big.NewInt(1 << 8)
-	postQuoteRequestsRequestFieldStartDate           = big.NewInt(1 << 9)
-	postQuoteRequestsRequestFieldDrivers             = big.NewInt(1 << 10)
+	getQuoteRequestsRequestFieldDateFrom          = big.NewInt(1 << 0)
+	getQuoteRequestsRequestFieldDateTo            = big.NewInt(1 << 1)
+	getQuoteRequestsRequestFieldPerPage           = big.NewInt(1 << 2)
+	getQuoteRequestsRequestFieldIncludeAggregates = big.NewInt(1 << 3)
+)
+
+type GetQuoteRequestsRequest struct {
+	// Inclusive lower bound for quote request creation date.
+	DateFrom *time.Time `json:"-" url:"date_from,omitempty" format:"date"`
+	// Inclusive upper bound for quote request creation date.
+	DateTo *time.Time `json:"-" url:"date_to,omitempty" format:"date"`
+	// Number of quote requests to return per page.
+	PerPage *int `json:"-" url:"per_page,omitempty"`
+	// When true, includes quote request totals and monthly buckets for the filtered result set.
+	IncludeAggregates *bool `json:"-" url:"include_aggregates,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetQuoteRequestsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetDateFrom sets the DateFrom field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetQuoteRequestsRequest) SetDateFrom(dateFrom *time.Time) {
+	g.DateFrom = dateFrom
+	g.require(getQuoteRequestsRequestFieldDateFrom)
+}
+
+// SetDateTo sets the DateTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetQuoteRequestsRequest) SetDateTo(dateTo *time.Time) {
+	g.DateTo = dateTo
+	g.require(getQuoteRequestsRequestFieldDateTo)
+}
+
+// SetPerPage sets the PerPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetQuoteRequestsRequest) SetPerPage(perPage *int) {
+	g.PerPage = perPage
+	g.require(getQuoteRequestsRequestFieldPerPage)
+}
+
+// SetIncludeAggregates sets the IncludeAggregates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetQuoteRequestsRequest) SetIncludeAggregates(includeAggregates *bool) {
+	g.IncludeAggregates = includeAggregates
+	g.require(getQuoteRequestsRequestFieldIncludeAggregates)
+}
+
+var (
+	postQuoteRequestsRequestFieldAcceptLanguage      = big.NewInt(1 << 0)
+	postQuoteRequestsRequestFieldOtp                 = big.NewInt(1 << 1)
+	postQuoteRequestsRequestFieldOwnerID             = big.NewInt(1 << 2)
+	postQuoteRequestsRequestFieldEmail               = big.NewInt(1 << 3)
+	postQuoteRequestsRequestFieldPhone               = big.NewInt(1 << 4)
+	postQuoteRequestsRequestFieldBirthdate           = big.NewInt(1 << 5)
+	postQuoteRequestsRequestFieldCarSequenceNumber   = big.NewInt(1 << 6)
+	postQuoteRequestsRequestFieldCustomNumber        = big.NewInt(1 << 7)
+	postQuoteRequestsRequestFieldIsOwnershipTransfer = big.NewInt(1 << 8)
+	postQuoteRequestsRequestFieldCurrentCarOwnerID   = big.NewInt(1 << 9)
+	postQuoteRequestsRequestFieldCarEstimatedCost    = big.NewInt(1 << 10)
+	postQuoteRequestsRequestFieldCarModelYear        = big.NewInt(1 << 11)
+	postQuoteRequestsRequestFieldStartDate           = big.NewInt(1 << 12)
+	postQuoteRequestsRequestFieldDrivers             = big.NewInt(1 << 13)
 )
 
 type PostQuoteRequestsRequest struct {
+	// Set to ar to receive Arabic-localized quote content.
+	AcceptLanguage *PostQuoteRequestsRequestAcceptLanguage `json:"-" url:"-"`
+	// The OTP received by the customer from the Request OTP API
+	Otp string `json:"otp" url:"-"`
 	// Owner ID must be 10 digits starting with 1, 2, or 7
 	OwnerID string `json:"owner_id" url:"-"`
 	// Email address must be valid and belongs to the customer
@@ -59,7 +122,9 @@ type PostQuoteRequestsRequest struct {
 	// Birthdate in YYYY-MM-DD format
 	Birthdate time.Time `json:"birthdate" url:"-" format:"date"`
 	// Car sequence number must be 8 or 9 digits
-	CarSequenceNumber string `json:"car_sequence_number" url:"-"`
+	CarSequenceNumber *string `json:"car_sequence_number,omitempty" url:"-"`
+	// Custom car number between 1000000 and 9999999999 (for newly imported cars)
+	CustomNumber *string `json:"custom_number,omitempty" url:"-"`
 	// Indicates if the ownership is being transferred
 	IsOwnershipTransfer *bool `json:"is_ownership_transfer,omitempty" url:"-"`
 	// Required if is_ownership_transfer is true; 10 digits starting with 1,2,7
@@ -82,6 +147,20 @@ func (p *PostQuoteRequestsRequest) require(field *big.Int) {
 		p.explicitFields = big.NewInt(0)
 	}
 	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAcceptLanguage sets the AcceptLanguage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostQuoteRequestsRequest) SetAcceptLanguage(acceptLanguage *PostQuoteRequestsRequestAcceptLanguage) {
+	p.AcceptLanguage = acceptLanguage
+	p.require(postQuoteRequestsRequestFieldAcceptLanguage)
+}
+
+// SetOtp sets the Otp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostQuoteRequestsRequest) SetOtp(otp string) {
+	p.Otp = otp
+	p.require(postQuoteRequestsRequestFieldOtp)
 }
 
 // SetOwnerID sets the OwnerID field and marks it as non-optional;
@@ -114,9 +193,16 @@ func (p *PostQuoteRequestsRequest) SetBirthdate(birthdate time.Time) {
 
 // SetCarSequenceNumber sets the CarSequenceNumber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostQuoteRequestsRequest) SetCarSequenceNumber(carSequenceNumber string) {
+func (p *PostQuoteRequestsRequest) SetCarSequenceNumber(carSequenceNumber *string) {
 	p.CarSequenceNumber = carSequenceNumber
 	p.require(postQuoteRequestsRequestFieldCarSequenceNumber)
+}
+
+// SetCustomNumber sets the CustomNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostQuoteRequestsRequest) SetCustomNumber(customNumber *string) {
+	p.CustomNumber = customNumber
+	p.require(postQuoteRequestsRequestFieldCustomNumber)
 }
 
 // SetIsOwnershipTransfer sets the IsOwnershipTransfer field and marks it as non-optional;
@@ -215,18 +301,21 @@ var (
 	benefitFieldQuoteBenefitID = big.NewInt(1 << 0)
 	benefitFieldID             = big.NewInt(1 << 1)
 	benefitFieldName           = big.NewInt(1 << 2)
-	benefitFieldAmount         = big.NewInt(1 << 3)
-	benefitFieldVat            = big.NewInt(1 << 4)
-	benefitFieldURL            = big.NewInt(1 << 5)
+	benefitFieldNameAr         = big.NewInt(1 << 3)
+	benefitFieldAmount         = big.NewInt(1 << 4)
+	benefitFieldVat            = big.NewInt(1 << 5)
+	benefitFieldURL            = big.NewInt(1 << 6)
 )
 
 type Benefit struct {
-	QuoteBenefitID *string  `json:"quote_benefit_id,omitempty" url:"quote_benefit_id,omitempty"`
-	ID             *string  `json:"id,omitempty" url:"id,omitempty"`
-	Name           *string  `json:"name,omitempty" url:"name,omitempty"`
-	Amount         *float64 `json:"amount,omitempty" url:"amount,omitempty"`
-	Vat            *float64 `json:"vat,omitempty" url:"vat,omitempty"`
-	URL            *string  `json:"url,omitempty" url:"url,omitempty"`
+	QuoteBenefitID *string `json:"quote_benefit_id,omitempty" url:"quote_benefit_id,omitempty"`
+	ID             *string `json:"id,omitempty" url:"id,omitempty"`
+	Name           *string `json:"name,omitempty" url:"name,omitempty"`
+	// Arabic name of the benefit. Use this field instead of `name` when rendering Arabic UIs.
+	NameAr *string  `json:"name_ar,omitempty" url:"name_ar,omitempty"`
+	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
+	Vat    *float64 `json:"vat,omitempty" url:"vat,omitempty"`
+	URL    *string  `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -254,6 +343,13 @@ func (b *Benefit) GetName() *string {
 		return nil
 	}
 	return b.Name
+}
+
+func (b *Benefit) GetNameAr() *string {
+	if b == nil {
+		return nil
+	}
+	return b.NameAr
 }
 
 func (b *Benefit) GetAmount() *float64 {
@@ -310,6 +406,13 @@ func (b *Benefit) SetID(id *string) {
 func (b *Benefit) SetName(name *string) {
 	b.Name = name
 	b.require(benefitFieldName)
+}
+
+// SetNameAr sets the NameAr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *Benefit) SetNameAr(nameAr *string) {
+	b.NameAr = nameAr
+	b.require(benefitFieldNameAr)
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -373,6 +476,298 @@ func (b *Benefit) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", b)
+}
+
+var (
+	paginatedQuoteResponseFieldCurrentPage  = big.NewInt(1 << 0)
+	paginatedQuoteResponseFieldData         = big.NewInt(1 << 1)
+	paginatedQuoteResponseFieldFirstPageURL = big.NewInt(1 << 2)
+	paginatedQuoteResponseFieldFrom         = big.NewInt(1 << 3)
+	paginatedQuoteResponseFieldLastPage     = big.NewInt(1 << 4)
+	paginatedQuoteResponseFieldLastPageURL  = big.NewInt(1 << 5)
+	paginatedQuoteResponseFieldLinks        = big.NewInt(1 << 6)
+	paginatedQuoteResponseFieldNextPageURL  = big.NewInt(1 << 7)
+	paginatedQuoteResponseFieldPath         = big.NewInt(1 << 8)
+	paginatedQuoteResponseFieldPerPage      = big.NewInt(1 << 9)
+	paginatedQuoteResponseFieldPrevPageURL  = big.NewInt(1 << 10)
+	paginatedQuoteResponseFieldTo           = big.NewInt(1 << 11)
+	paginatedQuoteResponseFieldTotal        = big.NewInt(1 << 12)
+	paginatedQuoteResponseFieldAggregates   = big.NewInt(1 << 13)
+)
+
+type PaginatedQuoteResponse struct {
+	CurrentPage  *int                    `json:"current_page,omitempty" url:"current_page,omitempty"`
+	Data         []*QuoteResponse        `json:"data,omitempty" url:"data,omitempty"`
+	FirstPageURL *string                 `json:"first_page_url,omitempty" url:"first_page_url,omitempty"`
+	From         *int                    `json:"from,omitempty" url:"from,omitempty"`
+	LastPage     *int                    `json:"last_page,omitempty" url:"last_page,omitempty"`
+	LastPageURL  *string                 `json:"last_page_url,omitempty" url:"last_page_url,omitempty"`
+	Links        []*PaginationLink       `json:"links,omitempty" url:"links,omitempty"`
+	NextPageURL  *string                 `json:"next_page_url,omitempty" url:"next_page_url,omitempty"`
+	Path         *string                 `json:"path,omitempty" url:"path,omitempty"`
+	PerPage      *int                    `json:"per_page,omitempty" url:"per_page,omitempty"`
+	PrevPageURL  *string                 `json:"prev_page_url,omitempty" url:"prev_page_url,omitempty"`
+	To           *int                    `json:"to,omitempty" url:"to,omitempty"`
+	Total        *int                    `json:"total,omitempty" url:"total,omitempty"`
+	Aggregates   *QuoteRequestAggregates `json:"aggregates,omitempty" url:"aggregates,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaginatedQuoteResponse) GetCurrentPage() *int {
+	if p == nil {
+		return nil
+	}
+	return p.CurrentPage
+}
+
+func (p *PaginatedQuoteResponse) GetData() []*QuoteResponse {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PaginatedQuoteResponse) GetFirstPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FirstPageURL
+}
+
+func (p *PaginatedQuoteResponse) GetFrom() *int {
+	if p == nil {
+		return nil
+	}
+	return p.From
+}
+
+func (p *PaginatedQuoteResponse) GetLastPage() *int {
+	if p == nil {
+		return nil
+	}
+	return p.LastPage
+}
+
+func (p *PaginatedQuoteResponse) GetLastPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LastPageURL
+}
+
+func (p *PaginatedQuoteResponse) GetLinks() []*PaginationLink {
+	if p == nil {
+		return nil
+	}
+	return p.Links
+}
+
+func (p *PaginatedQuoteResponse) GetNextPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.NextPageURL
+}
+
+func (p *PaginatedQuoteResponse) GetPath() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Path
+}
+
+func (p *PaginatedQuoteResponse) GetPerPage() *int {
+	if p == nil {
+		return nil
+	}
+	return p.PerPage
+}
+
+func (p *PaginatedQuoteResponse) GetPrevPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PrevPageURL
+}
+
+func (p *PaginatedQuoteResponse) GetTo() *int {
+	if p == nil {
+		return nil
+	}
+	return p.To
+}
+
+func (p *PaginatedQuoteResponse) GetTotal() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Total
+}
+
+func (p *PaginatedQuoteResponse) GetAggregates() *QuoteRequestAggregates {
+	if p == nil {
+		return nil
+	}
+	return p.Aggregates
+}
+
+func (p *PaginatedQuoteResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaginatedQuoteResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCurrentPage sets the CurrentPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetCurrentPage(currentPage *int) {
+	p.CurrentPage = currentPage
+	p.require(paginatedQuoteResponseFieldCurrentPage)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetData(data []*QuoteResponse) {
+	p.Data = data
+	p.require(paginatedQuoteResponseFieldData)
+}
+
+// SetFirstPageURL sets the FirstPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetFirstPageURL(firstPageURL *string) {
+	p.FirstPageURL = firstPageURL
+	p.require(paginatedQuoteResponseFieldFirstPageURL)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetFrom(from *int) {
+	p.From = from
+	p.require(paginatedQuoteResponseFieldFrom)
+}
+
+// SetLastPage sets the LastPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetLastPage(lastPage *int) {
+	p.LastPage = lastPage
+	p.require(paginatedQuoteResponseFieldLastPage)
+}
+
+// SetLastPageURL sets the LastPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetLastPageURL(lastPageURL *string) {
+	p.LastPageURL = lastPageURL
+	p.require(paginatedQuoteResponseFieldLastPageURL)
+}
+
+// SetLinks sets the Links field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetLinks(links []*PaginationLink) {
+	p.Links = links
+	p.require(paginatedQuoteResponseFieldLinks)
+}
+
+// SetNextPageURL sets the NextPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetNextPageURL(nextPageURL *string) {
+	p.NextPageURL = nextPageURL
+	p.require(paginatedQuoteResponseFieldNextPageURL)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetPath(path *string) {
+	p.Path = path
+	p.require(paginatedQuoteResponseFieldPath)
+}
+
+// SetPerPage sets the PerPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetPerPage(perPage *int) {
+	p.PerPage = perPage
+	p.require(paginatedQuoteResponseFieldPerPage)
+}
+
+// SetPrevPageURL sets the PrevPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetPrevPageURL(prevPageURL *string) {
+	p.PrevPageURL = prevPageURL
+	p.require(paginatedQuoteResponseFieldPrevPageURL)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetTo(to *int) {
+	p.To = to
+	p.require(paginatedQuoteResponseFieldTo)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetTotal(total *int) {
+	p.Total = total
+	p.require(paginatedQuoteResponseFieldTotal)
+}
+
+// SetAggregates sets the Aggregates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedQuoteResponse) SetAggregates(aggregates *QuoteRequestAggregates) {
+	p.Aggregates = aggregates
+	p.require(paginatedQuoteResponseFieldAggregates)
+}
+
+func (p *PaginatedQuoteResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaginatedQuoteResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaginatedQuoteResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaginatedQuoteResponse) MarshalJSON() ([]byte, error) {
+	type embed PaginatedQuoteResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaginatedQuoteResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 var (
@@ -539,21 +934,124 @@ func (q *QuotePrice) String() string {
 	return fmt.Sprintf("%#v", q)
 }
 
+// Returned only when include_aggregates is true.
+var (
+	quoteRequestAggregatesFieldTotalCount = big.NewInt(1 << 0)
+	quoteRequestAggregatesFieldByMonth    = big.NewInt(1 << 1)
+)
+
+type QuoteRequestAggregates struct {
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Monthly quote request counts keyed by YYYY-MM.
+	ByMonth map[string]int `json:"by_month,omitempty" url:"by_month,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (q *QuoteRequestAggregates) GetTotalCount() *int {
+	if q == nil {
+		return nil
+	}
+	return q.TotalCount
+}
+
+func (q *QuoteRequestAggregates) GetByMonth() map[string]int {
+	if q == nil {
+		return nil
+	}
+	return q.ByMonth
+}
+
+func (q *QuoteRequestAggregates) GetExtraProperties() map[string]interface{} {
+	if q == nil {
+		return nil
+	}
+	return q.extraProperties
+}
+
+func (q *QuoteRequestAggregates) require(field *big.Int) {
+	if q.explicitFields == nil {
+		q.explicitFields = big.NewInt(0)
+	}
+	q.explicitFields.Or(q.explicitFields, field)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteRequestAggregates) SetTotalCount(totalCount *int) {
+	q.TotalCount = totalCount
+	q.require(quoteRequestAggregatesFieldTotalCount)
+}
+
+// SetByMonth sets the ByMonth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteRequestAggregates) SetByMonth(byMonth map[string]int) {
+	q.ByMonth = byMonth
+	q.require(quoteRequestAggregatesFieldByMonth)
+}
+
+func (q *QuoteRequestAggregates) UnmarshalJSON(data []byte) error {
+	type unmarshaler QuoteRequestAggregates
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*q = QuoteRequestAggregates(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *q)
+	if err != nil {
+		return err
+	}
+	q.extraProperties = extraProperties
+	q.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (q *QuoteRequestAggregates) MarshalJSON() ([]byte, error) {
+	type embed QuoteRequestAggregates
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*q),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, q.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (q *QuoteRequestAggregates) String() string {
+	if q == nil {
+		return "<nil>"
+	}
+	if len(q.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(q.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(q); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", q)
+}
+
 var (
 	quoteResponseFieldOwnerID             = big.NewInt(1 << 0)
 	quoteResponseFieldPhone               = big.NewInt(1 << 1)
 	quoteResponseFieldBirthdate           = big.NewInt(1 << 2)
 	quoteResponseFieldCarSequenceNumber   = big.NewInt(1 << 3)
-	quoteResponseFieldIsOwnershipTransfer = big.NewInt(1 << 4)
-	quoteResponseFieldCarEstimatedCost    = big.NewInt(1 << 5)
-	quoteResponseFieldCarModelYear        = big.NewInt(1 << 6)
-	quoteResponseFieldStartDate           = big.NewInt(1 << 7)
-	quoteResponseFieldDrivers             = big.NewInt(1 << 8)
-	quoteResponseFieldQuotes              = big.NewInt(1 << 9)
-	quoteResponseFieldClientID            = big.NewInt(1 << 10)
-	quoteResponseFieldUpdatedAt           = big.NewInt(1 << 11)
-	quoteResponseFieldCreatedAt           = big.NewInt(1 << 12)
-	quoteResponseFieldID                  = big.NewInt(1 << 13)
+	quoteResponseFieldCustomNumber        = big.NewInt(1 << 4)
+	quoteResponseFieldIsOwnershipTransfer = big.NewInt(1 << 5)
+	quoteResponseFieldCarEstimatedCost    = big.NewInt(1 << 6)
+	quoteResponseFieldCarModelYear        = big.NewInt(1 << 7)
+	quoteResponseFieldStartDate           = big.NewInt(1 << 8)
+	quoteResponseFieldDrivers             = big.NewInt(1 << 9)
+	quoteResponseFieldQuotes              = big.NewInt(1 << 10)
+	quoteResponseFieldClientID            = big.NewInt(1 << 11)
+	quoteResponseFieldUpdatedAt           = big.NewInt(1 << 12)
+	quoteResponseFieldCreatedAt           = big.NewInt(1 << 13)
+	quoteResponseFieldID                  = big.NewInt(1 << 14)
 )
 
 type QuoteResponse struct {
@@ -565,6 +1063,8 @@ type QuoteResponse struct {
 	Birthdate *time.Time `json:"birthdate,omitempty" url:"birthdate,omitempty" format:"date"`
 	// The car sequence number from 9 digits
 	CarSequenceNumber *int `json:"car_sequence_number,omitempty" url:"car_sequence_number,omitempty"`
+	// Custom car number for newly imported cars (present when `custom_number` was used in the request)
+	CustomNumber *string `json:"custom_number,omitempty" url:"custom_number,omitempty"`
 	// Whether it was a car transfer or not
 	IsOwnershipTransfer *bool `json:"is_ownership_transfer,omitempty" url:"is_ownership_transfer,omitempty"`
 	// The estimated cost of the car
@@ -619,6 +1119,13 @@ func (q *QuoteResponse) GetCarSequenceNumber() *int {
 		return nil
 	}
 	return q.CarSequenceNumber
+}
+
+func (q *QuoteResponse) GetCustomNumber() *string {
+	if q == nil {
+		return nil
+	}
+	return q.CustomNumber
 }
 
 func (q *QuoteResponse) GetIsOwnershipTransfer() *bool {
@@ -731,6 +1238,13 @@ func (q *QuoteResponse) SetBirthdate(birthdate *time.Time) {
 func (q *QuoteResponse) SetCarSequenceNumber(carSequenceNumber *int) {
 	q.CarSequenceNumber = carSequenceNumber
 	q.require(quoteResponseFieldCarSequenceNumber)
+}
+
+// SetCustomNumber sets the CustomNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponse) SetCustomNumber(customNumber *string) {
+	q.CustomNumber = customNumber
+	q.require(quoteResponseFieldCustomNumber)
 }
 
 // SetIsOwnershipTransfer sets the IsOwnershipTransfer field and marks it as non-optional;
@@ -993,13 +1507,31 @@ func (q *QuoteResponseDriversItem) String() string {
 }
 
 var (
-	quoteResponseQuotesItemFieldCompanyName = big.NewInt(1 << 0)
-	quoteResponseQuotesItemFieldPrices      = big.NewInt(1 << 1)
-	quoteResponseQuotesItemFieldBenefits    = big.NewInt(1 << 2)
+	quoteResponseQuotesItemFieldCompanyName            = big.NewInt(1 << 0)
+	quoteResponseQuotesItemFieldCompanyNameAr          = big.NewInt(1 << 1)
+	quoteResponseQuotesItemFieldType                   = big.NewInt(1 << 2)
+	quoteResponseQuotesItemFieldInsuranceTypeDisplay   = big.NewInt(1 << 3)
+	quoteResponseQuotesItemFieldInsuranceTypeDisplayAr = big.NewInt(1 << 4)
+	quoteResponseQuotesItemFieldCompanyLogoURL         = big.NewInt(1 << 5)
+	quoteResponseQuotesItemFieldSquareCompanyLogoURL   = big.NewInt(1 << 6)
+	quoteResponseQuotesItemFieldPrices                 = big.NewInt(1 << 7)
+	quoteResponseQuotesItemFieldBenefits               = big.NewInt(1 << 8)
 )
 
 type QuoteResponseQuotesItem struct {
 	CompanyName *string `json:"company_name,omitempty" url:"company_name,omitempty"`
+	// Arabic name of the insurance company. Use this field instead of `company_name` when rendering Arabic UIs.
+	CompanyNameAr *string `json:"company_name_ar,omitempty" url:"company_name_ar,omitempty"`
+	// Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`.
+	Type *QuoteResponseQuotesItemType `json:"type,omitempty" url:"type,omitempty"`
+	// The insurance type label exactly as the insurance provider intends it to be displayed. While `type` normalises all non-TPL / non-Comprehensive values into `TPL +`, this field preserves the original provider string (e.g. "TPL Plus", "Third Party Plus") and should be shown in the UI wherever the provider's own wording is preferred.
+	InsuranceTypeDisplay *string `json:"insurance_type_display,omitempty" url:"insurance_type_display,omitempty"`
+	// Arabic translation of `insurance_type_display`. Use this field for Arabic UIs. Falls back to the English value for provider-specific types that do not have a translation.
+	InsuranceTypeDisplayAr *string `json:"insurance_type_display_ar,omitempty" url:"insurance_type_display_ar,omitempty"`
+	// CDN URL for the insurance company's logo.
+	CompanyLogoURL *string `json:"company_logo_url,omitempty" url:"company_logo_url,omitempty"`
+	// CDN URL for the insurance company's square logo.
+	SquareCompanyLogoURL *string `json:"square_company_logo_url,omitempty" url:"square_company_logo_url,omitempty"`
 	// An array representing each price. This will have the premium and the deductible
 	Prices []*QuotePrice `json:"prices,omitempty" url:"prices,omitempty"`
 	// An array representing the different benefits offered by the company. Some of them are free and comes with the insurance, some are paid and optional
@@ -1017,6 +1549,48 @@ func (q *QuoteResponseQuotesItem) GetCompanyName() *string {
 		return nil
 	}
 	return q.CompanyName
+}
+
+func (q *QuoteResponseQuotesItem) GetCompanyNameAr() *string {
+	if q == nil {
+		return nil
+	}
+	return q.CompanyNameAr
+}
+
+func (q *QuoteResponseQuotesItem) GetType() *QuoteResponseQuotesItemType {
+	if q == nil {
+		return nil
+	}
+	return q.Type
+}
+
+func (q *QuoteResponseQuotesItem) GetInsuranceTypeDisplay() *string {
+	if q == nil {
+		return nil
+	}
+	return q.InsuranceTypeDisplay
+}
+
+func (q *QuoteResponseQuotesItem) GetInsuranceTypeDisplayAr() *string {
+	if q == nil {
+		return nil
+	}
+	return q.InsuranceTypeDisplayAr
+}
+
+func (q *QuoteResponseQuotesItem) GetCompanyLogoURL() *string {
+	if q == nil {
+		return nil
+	}
+	return q.CompanyLogoURL
+}
+
+func (q *QuoteResponseQuotesItem) GetSquareCompanyLogoURL() *string {
+	if q == nil {
+		return nil
+	}
+	return q.SquareCompanyLogoURL
 }
 
 func (q *QuoteResponseQuotesItem) GetPrices() []*QuotePrice {
@@ -1052,6 +1626,48 @@ func (q *QuoteResponseQuotesItem) require(field *big.Int) {
 func (q *QuoteResponseQuotesItem) SetCompanyName(companyName *string) {
 	q.CompanyName = companyName
 	q.require(quoteResponseQuotesItemFieldCompanyName)
+}
+
+// SetCompanyNameAr sets the CompanyNameAr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponseQuotesItem) SetCompanyNameAr(companyNameAr *string) {
+	q.CompanyNameAr = companyNameAr
+	q.require(quoteResponseQuotesItemFieldCompanyNameAr)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponseQuotesItem) SetType(type_ *QuoteResponseQuotesItemType) {
+	q.Type = type_
+	q.require(quoteResponseQuotesItemFieldType)
+}
+
+// SetInsuranceTypeDisplay sets the InsuranceTypeDisplay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponseQuotesItem) SetInsuranceTypeDisplay(insuranceTypeDisplay *string) {
+	q.InsuranceTypeDisplay = insuranceTypeDisplay
+	q.require(quoteResponseQuotesItemFieldInsuranceTypeDisplay)
+}
+
+// SetInsuranceTypeDisplayAr sets the InsuranceTypeDisplayAr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponseQuotesItem) SetInsuranceTypeDisplayAr(insuranceTypeDisplayAr *string) {
+	q.InsuranceTypeDisplayAr = insuranceTypeDisplayAr
+	q.require(quoteResponseQuotesItemFieldInsuranceTypeDisplayAr)
+}
+
+// SetCompanyLogoURL sets the CompanyLogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponseQuotesItem) SetCompanyLogoURL(companyLogoURL *string) {
+	q.CompanyLogoURL = companyLogoURL
+	q.require(quoteResponseQuotesItemFieldCompanyLogoURL)
+}
+
+// SetSquareCompanyLogoURL sets the SquareCompanyLogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (q *QuoteResponseQuotesItem) SetSquareCompanyLogoURL(squareCompanyLogoURL *string) {
+	q.SquareCompanyLogoURL = squareCompanyLogoURL
+	q.require(quoteResponseQuotesItemFieldSquareCompanyLogoURL)
 }
 
 // SetPrices sets the Prices field and marks it as non-optional;
@@ -1108,6 +1724,29 @@ func (q *QuoteResponseQuotesItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", q)
+}
+
+// Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`.
+type QuoteResponseQuotesItemType string
+
+const (
+	QuoteResponseQuotesItemTypeTpl           QuoteResponseQuotesItemType = "TPL"
+	QuoteResponseQuotesItemTypeComprehensive QuoteResponseQuotesItemType = "Comprehensive"
+)
+
+func NewQuoteResponseQuotesItemTypeFromString(s string) (QuoteResponseQuotesItemType, error) {
+	switch s {
+	case "TPL":
+		return QuoteResponseQuotesItemTypeTpl, nil
+	case "Comprehensive":
+		return QuoteResponseQuotesItemTypeComprehensive, nil
+	}
+	var t QuoteResponseQuotesItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (q QuoteResponseQuotesItemType) Ptr() *QuoteResponseQuotesItemType {
+	return &q
 }
 
 var (
@@ -1194,396 +1833,23 @@ func (d *DeleteQuoteRequestsIDResponse) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-var (
-	getQuoteRequestsResponseFieldCurrentPage  = big.NewInt(1 << 0)
-	getQuoteRequestsResponseFieldData         = big.NewInt(1 << 1)
-	getQuoteRequestsResponseFieldFirstPageURL = big.NewInt(1 << 2)
-	getQuoteRequestsResponseFieldFrom         = big.NewInt(1 << 3)
-	getQuoteRequestsResponseFieldLastPage     = big.NewInt(1 << 4)
-	getQuoteRequestsResponseFieldLastPageURL  = big.NewInt(1 << 5)
-	getQuoteRequestsResponseFieldLinks        = big.NewInt(1 << 6)
-	getQuoteRequestsResponseFieldNextPageURL  = big.NewInt(1 << 7)
-	getQuoteRequestsResponseFieldPath         = big.NewInt(1 << 8)
-	getQuoteRequestsResponseFieldPerPage      = big.NewInt(1 << 9)
-	getQuoteRequestsResponseFieldPrevPageURL  = big.NewInt(1 << 10)
-	getQuoteRequestsResponseFieldTo           = big.NewInt(1 << 11)
-	getQuoteRequestsResponseFieldTotal        = big.NewInt(1 << 12)
+type PostQuoteRequestsRequestAcceptLanguage string
+
+const (
+	PostQuoteRequestsRequestAcceptLanguageAr PostQuoteRequestsRequestAcceptLanguage = "ar"
 )
 
-type GetQuoteRequestsResponse struct {
-	CurrentPage  *int                                 `json:"current_page,omitempty" url:"current_page,omitempty"`
-	Data         []*QuoteResponse                     `json:"data,omitempty" url:"data,omitempty"`
-	FirstPageURL *string                              `json:"first_page_url,omitempty" url:"first_page_url,omitempty"`
-	From         *int                                 `json:"from,omitempty" url:"from,omitempty"`
-	LastPage     *int                                 `json:"last_page,omitempty" url:"last_page,omitempty"`
-	LastPageURL  *string                              `json:"last_page_url,omitempty" url:"last_page_url,omitempty"`
-	Links        []*GetQuoteRequestsResponseLinksItem `json:"links,omitempty" url:"links,omitempty"`
-	NextPageURL  *string                              `json:"next_page_url,omitempty" url:"next_page_url,omitempty"`
-	Path         *string                              `json:"path,omitempty" url:"path,omitempty"`
-	PerPage      *int                                 `json:"per_page,omitempty" url:"per_page,omitempty"`
-	PrevPageURL  *string                              `json:"prev_page_url,omitempty" url:"prev_page_url,omitempty"`
-	To           *int                                 `json:"to,omitempty" url:"to,omitempty"`
-	Total        *int                                 `json:"total,omitempty" url:"total,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (g *GetQuoteRequestsResponse) GetCurrentPage() *int {
-	if g == nil {
-		return nil
+func NewPostQuoteRequestsRequestAcceptLanguageFromString(s string) (PostQuoteRequestsRequestAcceptLanguage, error) {
+	switch s {
+	case "ar":
+		return PostQuoteRequestsRequestAcceptLanguageAr, nil
 	}
-	return g.CurrentPage
+	var t PostQuoteRequestsRequestAcceptLanguage
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (g *GetQuoteRequestsResponse) GetData() []*QuoteResponse {
-	if g == nil {
-		return nil
-	}
-	return g.Data
-}
-
-func (g *GetQuoteRequestsResponse) GetFirstPageURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.FirstPageURL
-}
-
-func (g *GetQuoteRequestsResponse) GetFrom() *int {
-	if g == nil {
-		return nil
-	}
-	return g.From
-}
-
-func (g *GetQuoteRequestsResponse) GetLastPage() *int {
-	if g == nil {
-		return nil
-	}
-	return g.LastPage
-}
-
-func (g *GetQuoteRequestsResponse) GetLastPageURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.LastPageURL
-}
-
-func (g *GetQuoteRequestsResponse) GetLinks() []*GetQuoteRequestsResponseLinksItem {
-	if g == nil {
-		return nil
-	}
-	return g.Links
-}
-
-func (g *GetQuoteRequestsResponse) GetNextPageURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.NextPageURL
-}
-
-func (g *GetQuoteRequestsResponse) GetPath() *string {
-	if g == nil {
-		return nil
-	}
-	return g.Path
-}
-
-func (g *GetQuoteRequestsResponse) GetPerPage() *int {
-	if g == nil {
-		return nil
-	}
-	return g.PerPage
-}
-
-func (g *GetQuoteRequestsResponse) GetPrevPageURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.PrevPageURL
-}
-
-func (g *GetQuoteRequestsResponse) GetTo() *int {
-	if g == nil {
-		return nil
-	}
-	return g.To
-}
-
-func (g *GetQuoteRequestsResponse) GetTotal() *int {
-	if g == nil {
-		return nil
-	}
-	return g.Total
-}
-
-func (g *GetQuoteRequestsResponse) GetExtraProperties() map[string]interface{} {
-	if g == nil {
-		return nil
-	}
-	return g.extraProperties
-}
-
-func (g *GetQuoteRequestsResponse) require(field *big.Int) {
-	if g.explicitFields == nil {
-		g.explicitFields = big.NewInt(0)
-	}
-	g.explicitFields.Or(g.explicitFields, field)
-}
-
-// SetCurrentPage sets the CurrentPage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetCurrentPage(currentPage *int) {
-	g.CurrentPage = currentPage
-	g.require(getQuoteRequestsResponseFieldCurrentPage)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetData(data []*QuoteResponse) {
-	g.Data = data
-	g.require(getQuoteRequestsResponseFieldData)
-}
-
-// SetFirstPageURL sets the FirstPageURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetFirstPageURL(firstPageURL *string) {
-	g.FirstPageURL = firstPageURL
-	g.require(getQuoteRequestsResponseFieldFirstPageURL)
-}
-
-// SetFrom sets the From field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetFrom(from *int) {
-	g.From = from
-	g.require(getQuoteRequestsResponseFieldFrom)
-}
-
-// SetLastPage sets the LastPage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetLastPage(lastPage *int) {
-	g.LastPage = lastPage
-	g.require(getQuoteRequestsResponseFieldLastPage)
-}
-
-// SetLastPageURL sets the LastPageURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetLastPageURL(lastPageURL *string) {
-	g.LastPageURL = lastPageURL
-	g.require(getQuoteRequestsResponseFieldLastPageURL)
-}
-
-// SetLinks sets the Links field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetLinks(links []*GetQuoteRequestsResponseLinksItem) {
-	g.Links = links
-	g.require(getQuoteRequestsResponseFieldLinks)
-}
-
-// SetNextPageURL sets the NextPageURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetNextPageURL(nextPageURL *string) {
-	g.NextPageURL = nextPageURL
-	g.require(getQuoteRequestsResponseFieldNextPageURL)
-}
-
-// SetPath sets the Path field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetPath(path *string) {
-	g.Path = path
-	g.require(getQuoteRequestsResponseFieldPath)
-}
-
-// SetPerPage sets the PerPage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetPerPage(perPage *int) {
-	g.PerPage = perPage
-	g.require(getQuoteRequestsResponseFieldPerPage)
-}
-
-// SetPrevPageURL sets the PrevPageURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetPrevPageURL(prevPageURL *string) {
-	g.PrevPageURL = prevPageURL
-	g.require(getQuoteRequestsResponseFieldPrevPageURL)
-}
-
-// SetTo sets the To field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetTo(to *int) {
-	g.To = to
-	g.require(getQuoteRequestsResponseFieldTo)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponse) SetTotal(total *int) {
-	g.Total = total
-	g.require(getQuoteRequestsResponseFieldTotal)
-}
-
-func (g *GetQuoteRequestsResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler GetQuoteRequestsResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*g = GetQuoteRequestsResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *g)
-	if err != nil {
-		return err
-	}
-	g.extraProperties = extraProperties
-	g.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (g *GetQuoteRequestsResponse) MarshalJSON() ([]byte, error) {
-	type embed GetQuoteRequestsResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*g),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (g *GetQuoteRequestsResponse) String() string {
-	if g == nil {
-		return "<nil>"
-	}
-	if len(g.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(g); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", g)
-}
-
-var (
-	getQuoteRequestsResponseLinksItemFieldURL    = big.NewInt(1 << 0)
-	getQuoteRequestsResponseLinksItemFieldLabel  = big.NewInt(1 << 1)
-	getQuoteRequestsResponseLinksItemFieldActive = big.NewInt(1 << 2)
-)
-
-type GetQuoteRequestsResponseLinksItem struct {
-	URL    *string `json:"url,omitempty" url:"url,omitempty"`
-	Label  *string `json:"label,omitempty" url:"label,omitempty"`
-	Active *bool   `json:"active,omitempty" url:"active,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) GetURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.URL
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) GetLabel() *string {
-	if g == nil {
-		return nil
-	}
-	return g.Label
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) GetActive() *bool {
-	if g == nil {
-		return nil
-	}
-	return g.Active
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) GetExtraProperties() map[string]interface{} {
-	if g == nil {
-		return nil
-	}
-	return g.extraProperties
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) require(field *big.Int) {
-	if g.explicitFields == nil {
-		g.explicitFields = big.NewInt(0)
-	}
-	g.explicitFields.Or(g.explicitFields, field)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponseLinksItem) SetURL(url *string) {
-	g.URL = url
-	g.require(getQuoteRequestsResponseLinksItemFieldURL)
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponseLinksItem) SetLabel(label *string) {
-	g.Label = label
-	g.require(getQuoteRequestsResponseLinksItemFieldLabel)
-}
-
-// SetActive sets the Active field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetQuoteRequestsResponseLinksItem) SetActive(active *bool) {
-	g.Active = active
-	g.require(getQuoteRequestsResponseLinksItemFieldActive)
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler GetQuoteRequestsResponseLinksItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*g = GetQuoteRequestsResponseLinksItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *g)
-	if err != nil {
-		return err
-	}
-	g.extraProperties = extraProperties
-	g.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) MarshalJSON() ([]byte, error) {
-	type embed GetQuoteRequestsResponseLinksItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*g),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (g *GetQuoteRequestsResponseLinksItem) String() string {
-	if g == nil {
-		return "<nil>"
-	}
-	if len(g.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(g); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", g)
+func (p PostQuoteRequestsRequestAcceptLanguage) Ptr() *PostQuoteRequestsRequestAcceptLanguage {
+	return &p
 }
 
 var (
