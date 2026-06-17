@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	motorgosdk "github.com/YasminaAI/motor-go-sdk"
-	core "github.com/YasminaAI/motor-go-sdk/core"
-	internal "github.com/YasminaAI/motor-go-sdk/internal"
-	option "github.com/YasminaAI/motor-go-sdk/option"
+	motorgosdk "github.com/yasminaai/motor-go-sdk"
+	core "github.com/yasminaai/motor-go-sdk/core"
+	internal "github.com/yasminaai/motor-go-sdk/internal"
+	option "github.com/yasminaai/motor-go-sdk/option"
 )
 
 type RawClient struct {

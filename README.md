@@ -1,6 +1,6 @@
 # Yasminaai Go Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2FYasminaAI%2Fmotor-go-sdk)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fyasminaai%2Fmotor-go-sdk)
 
 The Yasminaai Go library provides convenient access to the Yasminaai APIs from Go.
 
@@ -20,7 +20,7 @@ The Yasminaai Go library provides convenient access to the Yasminaai APIs from G
 
 ## Reference
 
-A full reference for this library is available [here](https://github.com/YasminaAI/motor-go-sdk/blob/HEAD/./reference.md).
+A full reference for this library is available [here](https://github.com/yasminaai/motor-go-sdk/blob/HEAD/./reference.md).
 
 ## Usage
 
@@ -32,9 +32,9 @@ package example
 import (
     context "context"
 
-    motorgosdk "github.com/YasminaAI/motor-go-sdk"
-    client "github.com/YasminaAI/motor-go-sdk/client"
-    option "github.com/YasminaAI/motor-go-sdk/option"
+    motorgosdk "github.com/yasminaai/motor-go-sdk"
+    client "github.com/yasminaai/motor-go-sdk/client"
+    option "github.com/yasminaai/motor-go-sdk/option"
 )
 
 func do() {

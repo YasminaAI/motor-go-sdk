@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/YasminaAI/motor-go-sdk/core"
+	"github.com/yasminaai/motor-go-sdk/core"
 )
 
 const (
