@@ -56,7 +56,7 @@ func (c *Client) ListPolicies(
 	ctx context.Context,
 	request *motorgosdk.GetPoliciesRequest,
 	opts ...option.RequestOption,
-) ([]*motorgosdk.Policy, error) {
+) (*motorgosdk.PaginatedPolicyResponse, error) {
 	response, err := c.WithRawResponse.ListPolicies(
 		ctx,
 		request,

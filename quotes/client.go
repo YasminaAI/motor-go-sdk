@@ -68,10 +68,12 @@ func (c *Client) DeleteQuote(
 
 func (c *Client) ListQuotes(
 	ctx context.Context,
+	request *motorgosdk.GetQuoteRequestsRequest,
 	opts ...option.RequestOption,
-) (*motorgosdk.GetQuoteRequestsResponse, error) {
+) (*motorgosdk.PaginatedQuoteResponse, error) {
 	response, err := c.WithRawResponse.ListQuotes(
 		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {

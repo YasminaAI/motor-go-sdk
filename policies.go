@@ -7,17 +7,21 @@ import (
 	fmt "fmt"
 	internal "github.com/YasminaAI/motor-go-sdk/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
-	postPoliciesRequestFieldQuoteRequestID   = big.NewInt(1 << 0)
-	postPoliciesRequestFieldQuoteReferenceID = big.NewInt(1 << 1)
-	postPoliciesRequestFieldQuotePriceID     = big.NewInt(1 << 2)
-	postPoliciesRequestFieldBenefits         = big.NewInt(1 << 3)
-	postPoliciesRequestFieldExtraFields      = big.NewInt(1 << 4)
+	postPoliciesRequestFieldOtp              = big.NewInt(1 << 0)
+	postPoliciesRequestFieldQuoteRequestID   = big.NewInt(1 << 1)
+	postPoliciesRequestFieldQuoteReferenceID = big.NewInt(1 << 2)
+	postPoliciesRequestFieldQuotePriceID     = big.NewInt(1 << 3)
+	postPoliciesRequestFieldBenefits         = big.NewInt(1 << 4)
+	postPoliciesRequestFieldExtraFields      = big.NewInt(1 << 5)
 )
 
 type PostPoliciesRequest struct {
+	// The OTP received by the customer from the Issue OTP API
+	Otp string `json:"otp" url:"-"`
 	// ID of the car quote request
 	QuoteRequestID int `json:"quote_request_id" url:"-"`
 	// Unique identifier for the quote reference ID (coming from POST /quote-requests)
@@ -38,6 +42,13 @@ func (p *PostPoliciesRequest) require(field *big.Int) {
 		p.explicitFields = big.NewInt(0)
 	}
 	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetOtp sets the Otp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPoliciesRequest) SetOtp(otp string) {
+	p.Otp = otp
+	p.require(postPoliciesRequestFieldOtp)
 }
 
 // SetQuoteRequestID sets the QuoteRequestID field and marks it as non-optional;
@@ -107,6 +118,9 @@ var (
 	getPoliciesRequestFieldMinPrice          = big.NewInt(1 << 7)
 	getPoliciesRequestFieldMaxPrice          = big.NewInt(1 << 8)
 	getPoliciesRequestFieldPerPage           = big.NewInt(1 << 9)
+	getPoliciesRequestFieldDateFrom          = big.NewInt(1 << 10)
+	getPoliciesRequestFieldDateTo            = big.NewInt(1 << 11)
+	getPoliciesRequestFieldIncludeAggregates = big.NewInt(1 << 12)
 )
 
 type GetPoliciesRequest struct {
@@ -120,6 +134,12 @@ type GetPoliciesRequest struct {
 	MinPrice          *float64 `json:"-" url:"min_price,omitempty"`
 	MaxPrice          *float64 `json:"-" url:"max_price,omitempty"`
 	PerPage           *int     `json:"-" url:"per_page,omitempty"`
+	// Inclusive lower bound for the policy date. For issued policies (`status=1`), this filters by `uploaded_at` (the provider policy issue timestamp) and falls back to `created_at` when `uploaded_at` is unavailable. For other statuses, this filters by `created_at`.
+	DateFrom *time.Time `json:"-" url:"date_from,omitempty" format:"date"`
+	// Inclusive upper bound for the policy date. For issued policies (`status=1`), this filters by `uploaded_at` (the provider policy issue timestamp) and falls back to `created_at` when `uploaded_at` is unavailable. For other statuses, this filters by `created_at`.
+	DateTo *time.Time `json:"-" url:"date_to,omitempty" format:"date"`
+	// When true, includes policy totals, total price, and monthly buckets for the filtered result set.
+	IncludeAggregates *bool `json:"-" url:"include_aggregates,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -202,6 +222,27 @@ func (g *GetPoliciesRequest) SetPerPage(perPage *int) {
 	g.require(getPoliciesRequestFieldPerPage)
 }
 
+// SetDateFrom sets the DateFrom field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPoliciesRequest) SetDateFrom(dateFrom *time.Time) {
+	g.DateFrom = dateFrom
+	g.require(getPoliciesRequestFieldDateFrom)
+}
+
+// SetDateTo sets the DateTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPoliciesRequest) SetDateTo(dateTo *time.Time) {
+	g.DateTo = dateTo
+	g.require(getPoliciesRequestFieldDateTo)
+}
+
+// SetIncludeAggregates sets the IncludeAggregates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPoliciesRequest) SetIncludeAggregates(includeAggregates *bool) {
+	g.IncludeAggregates = includeAggregates
+	g.require(getPoliciesRequestFieldIncludeAggregates)
+}
+
 var (
 	getPoliciesCarPolicyRequestFieldCarPolicy = big.NewInt(1 << 0)
 )
@@ -228,6 +269,298 @@ func (g *GetPoliciesCarPolicyRequest) SetCarPolicy(carPolicy int) {
 }
 
 var (
+	paginatedPolicyResponseFieldCurrentPage  = big.NewInt(1 << 0)
+	paginatedPolicyResponseFieldData         = big.NewInt(1 << 1)
+	paginatedPolicyResponseFieldFirstPageURL = big.NewInt(1 << 2)
+	paginatedPolicyResponseFieldFrom         = big.NewInt(1 << 3)
+	paginatedPolicyResponseFieldLastPage     = big.NewInt(1 << 4)
+	paginatedPolicyResponseFieldLastPageURL  = big.NewInt(1 << 5)
+	paginatedPolicyResponseFieldLinks        = big.NewInt(1 << 6)
+	paginatedPolicyResponseFieldNextPageURL  = big.NewInt(1 << 7)
+	paginatedPolicyResponseFieldPath         = big.NewInt(1 << 8)
+	paginatedPolicyResponseFieldPerPage      = big.NewInt(1 << 9)
+	paginatedPolicyResponseFieldPrevPageURL  = big.NewInt(1 << 10)
+	paginatedPolicyResponseFieldTo           = big.NewInt(1 << 11)
+	paginatedPolicyResponseFieldTotal        = big.NewInt(1 << 12)
+	paginatedPolicyResponseFieldAggregates   = big.NewInt(1 << 13)
+)
+
+type PaginatedPolicyResponse struct {
+	CurrentPage  *int              `json:"current_page,omitempty" url:"current_page,omitempty"`
+	Data         []*Policy         `json:"data,omitempty" url:"data,omitempty"`
+	FirstPageURL *string           `json:"first_page_url,omitempty" url:"first_page_url,omitempty"`
+	From         *int              `json:"from,omitempty" url:"from,omitempty"`
+	LastPage     *int              `json:"last_page,omitempty" url:"last_page,omitempty"`
+	LastPageURL  *string           `json:"last_page_url,omitempty" url:"last_page_url,omitempty"`
+	Links        []*PaginationLink `json:"links,omitempty" url:"links,omitempty"`
+	NextPageURL  *string           `json:"next_page_url,omitempty" url:"next_page_url,omitempty"`
+	Path         *string           `json:"path,omitempty" url:"path,omitempty"`
+	PerPage      *int              `json:"per_page,omitempty" url:"per_page,omitempty"`
+	PrevPageURL  *string           `json:"prev_page_url,omitempty" url:"prev_page_url,omitempty"`
+	To           *int              `json:"to,omitempty" url:"to,omitempty"`
+	Total        *int              `json:"total,omitempty" url:"total,omitempty"`
+	Aggregates   *PolicyAggregates `json:"aggregates,omitempty" url:"aggregates,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaginatedPolicyResponse) GetCurrentPage() *int {
+	if p == nil {
+		return nil
+	}
+	return p.CurrentPage
+}
+
+func (p *PaginatedPolicyResponse) GetData() []*Policy {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PaginatedPolicyResponse) GetFirstPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FirstPageURL
+}
+
+func (p *PaginatedPolicyResponse) GetFrom() *int {
+	if p == nil {
+		return nil
+	}
+	return p.From
+}
+
+func (p *PaginatedPolicyResponse) GetLastPage() *int {
+	if p == nil {
+		return nil
+	}
+	return p.LastPage
+}
+
+func (p *PaginatedPolicyResponse) GetLastPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LastPageURL
+}
+
+func (p *PaginatedPolicyResponse) GetLinks() []*PaginationLink {
+	if p == nil {
+		return nil
+	}
+	return p.Links
+}
+
+func (p *PaginatedPolicyResponse) GetNextPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.NextPageURL
+}
+
+func (p *PaginatedPolicyResponse) GetPath() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Path
+}
+
+func (p *PaginatedPolicyResponse) GetPerPage() *int {
+	if p == nil {
+		return nil
+	}
+	return p.PerPage
+}
+
+func (p *PaginatedPolicyResponse) GetPrevPageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PrevPageURL
+}
+
+func (p *PaginatedPolicyResponse) GetTo() *int {
+	if p == nil {
+		return nil
+	}
+	return p.To
+}
+
+func (p *PaginatedPolicyResponse) GetTotal() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Total
+}
+
+func (p *PaginatedPolicyResponse) GetAggregates() *PolicyAggregates {
+	if p == nil {
+		return nil
+	}
+	return p.Aggregates
+}
+
+func (p *PaginatedPolicyResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaginatedPolicyResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCurrentPage sets the CurrentPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetCurrentPage(currentPage *int) {
+	p.CurrentPage = currentPage
+	p.require(paginatedPolicyResponseFieldCurrentPage)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetData(data []*Policy) {
+	p.Data = data
+	p.require(paginatedPolicyResponseFieldData)
+}
+
+// SetFirstPageURL sets the FirstPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetFirstPageURL(firstPageURL *string) {
+	p.FirstPageURL = firstPageURL
+	p.require(paginatedPolicyResponseFieldFirstPageURL)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetFrom(from *int) {
+	p.From = from
+	p.require(paginatedPolicyResponseFieldFrom)
+}
+
+// SetLastPage sets the LastPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetLastPage(lastPage *int) {
+	p.LastPage = lastPage
+	p.require(paginatedPolicyResponseFieldLastPage)
+}
+
+// SetLastPageURL sets the LastPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetLastPageURL(lastPageURL *string) {
+	p.LastPageURL = lastPageURL
+	p.require(paginatedPolicyResponseFieldLastPageURL)
+}
+
+// SetLinks sets the Links field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetLinks(links []*PaginationLink) {
+	p.Links = links
+	p.require(paginatedPolicyResponseFieldLinks)
+}
+
+// SetNextPageURL sets the NextPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetNextPageURL(nextPageURL *string) {
+	p.NextPageURL = nextPageURL
+	p.require(paginatedPolicyResponseFieldNextPageURL)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetPath(path *string) {
+	p.Path = path
+	p.require(paginatedPolicyResponseFieldPath)
+}
+
+// SetPerPage sets the PerPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetPerPage(perPage *int) {
+	p.PerPage = perPage
+	p.require(paginatedPolicyResponseFieldPerPage)
+}
+
+// SetPrevPageURL sets the PrevPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetPrevPageURL(prevPageURL *string) {
+	p.PrevPageURL = prevPageURL
+	p.require(paginatedPolicyResponseFieldPrevPageURL)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetTo(to *int) {
+	p.To = to
+	p.require(paginatedPolicyResponseFieldTo)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetTotal(total *int) {
+	p.Total = total
+	p.require(paginatedPolicyResponseFieldTotal)
+}
+
+// SetAggregates sets the Aggregates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginatedPolicyResponse) SetAggregates(aggregates *PolicyAggregates) {
+	p.Aggregates = aggregates
+	p.require(paginatedPolicyResponseFieldAggregates)
+}
+
+func (p *PaginatedPolicyResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaginatedPolicyResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaginatedPolicyResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaginatedPolicyResponse) MarshalJSON() ([]byte, error) {
+	type embed PaginatedPolicyResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaginatedPolicyResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
 	policyFieldID                   = big.NewInt(1 << 0)
 	policyFieldMetaData             = big.NewInt(1 << 1)
 	policyFieldStartDate            = big.NewInt(1 << 2)
@@ -238,29 +571,32 @@ var (
 	policyFieldEndDate              = big.NewInt(1 << 7)
 	policyFieldIsClaimed            = big.NewInt(1 << 8)
 	policyFieldCreatedAt            = big.NewInt(1 << 9)
-	policyFieldUpdatedAt            = big.NewInt(1 << 10)
-	policyFieldClientID             = big.NewInt(1 << 11)
-	policyFieldCanceledAt           = big.NewInt(1 << 12)
-	policyFieldInvoice              = big.NewInt(1 << 13)
-	policyFieldCancellationDocument = big.NewInt(1 << 14)
+	policyFieldUploadedAt           = big.NewInt(1 << 10)
+	policyFieldUpdatedAt            = big.NewInt(1 << 11)
+	policyFieldClientID             = big.NewInt(1 << 12)
+	policyFieldCanceledAt           = big.NewInt(1 << 13)
+	policyFieldInvoice              = big.NewInt(1 << 14)
+	policyFieldCancellationDocument = big.NewInt(1 << 15)
 )
 
 type Policy struct {
-	ID                   *int           `json:"id,omitempty" url:"id,omitempty"`
-	MetaData             map[string]any `json:"meta_data,omitempty" url:"meta_data,omitempty"`
-	StartDate            *string        `json:"start_date,omitempty" url:"start_date,omitempty"`
-	ProviderPolicyID     *int           `json:"provider_policy_id,omitempty" url:"provider_policy_id,omitempty"`
-	ProviderPolicy       *string        `json:"provider_policy,omitempty" url:"provider_policy,omitempty"`
-	OrderStatus          *int           `json:"order_status,omitempty" url:"order_status,omitempty"`
-	ApprovalStatus       *int           `json:"approval_status,omitempty" url:"approval_status,omitempty"`
-	EndDate              *string        `json:"end_date,omitempty" url:"end_date,omitempty"`
-	IsClaimed            *bool          `json:"is_claimed,omitempty" url:"is_claimed,omitempty"`
-	CreatedAt            *string        `json:"created_at,omitempty" url:"created_at,omitempty"`
-	UpdatedAt            *string        `json:"updated_at,omitempty" url:"updated_at,omitempty"`
-	ClientID             *string        `json:"client_id,omitempty" url:"client_id,omitempty"`
-	CanceledAt           *string        `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
-	Invoice              *string        `json:"invoice,omitempty" url:"invoice,omitempty"`
-	CancellationDocument *string        `json:"cancellation_document,omitempty" url:"cancellation_document,omitempty"`
+	ID               *int           `json:"id,omitempty" url:"id,omitempty"`
+	MetaData         map[string]any `json:"meta_data,omitempty" url:"meta_data,omitempty"`
+	StartDate        *string        `json:"start_date,omitempty" url:"start_date,omitempty"`
+	ProviderPolicyID *int           `json:"provider_policy_id,omitempty" url:"provider_policy_id,omitempty"`
+	ProviderPolicy   *string        `json:"provider_policy,omitempty" url:"provider_policy,omitempty"`
+	OrderStatus      *int           `json:"order_status,omitempty" url:"order_status,omitempty"`
+	ApprovalStatus   *int           `json:"approval_status,omitempty" url:"approval_status,omitempty"`
+	EndDate          *string        `json:"end_date,omitempty" url:"end_date,omitempty"`
+	IsClaimed        *bool          `json:"is_claimed,omitempty" url:"is_claimed,omitempty"`
+	CreatedAt        *string        `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// Timestamp when the provider policy document was attached. For issued motor policies this is the closest available issue/purchase timestamp.
+	UploadedAt           *time.Time `json:"uploaded_at,omitempty" url:"uploaded_at,omitempty"`
+	UpdatedAt            *string    `json:"updated_at,omitempty" url:"updated_at,omitempty"`
+	ClientID             *string    `json:"client_id,omitempty" url:"client_id,omitempty"`
+	CanceledAt           *string    `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
+	Invoice              *string    `json:"invoice,omitempty" url:"invoice,omitempty"`
+	CancellationDocument *string    `json:"cancellation_document,omitempty" url:"cancellation_document,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -337,6 +673,13 @@ func (p *Policy) GetCreatedAt() *string {
 		return nil
 	}
 	return p.CreatedAt
+}
+
+func (p *Policy) GetUploadedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.UploadedAt
 }
 
 func (p *Policy) GetUpdatedAt() *string {
@@ -458,6 +801,13 @@ func (p *Policy) SetCreatedAt(createdAt *string) {
 	p.require(policyFieldCreatedAt)
 }
 
+// SetUploadedAt sets the UploadedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Policy) SetUploadedAt(uploadedAt *time.Time) {
+	p.UploadedAt = uploadedAt
+	p.require(policyFieldUploadedAt)
+}
+
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Policy) SetUpdatedAt(updatedAt *string) {
@@ -494,12 +844,18 @@ func (p *Policy) SetCancellationDocument(cancellationDocument *string) {
 }
 
 func (p *Policy) UnmarshalJSON(data []byte) error {
-	type unmarshaler Policy
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed Policy
+	var unmarshaler = struct {
+		embed
+		UploadedAt *internal.DateTime `json:"uploaded_at,omitempty"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = Policy(value)
+	*p = Policy(unmarshaler.embed)
+	p.UploadedAt = unmarshaler.UploadedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -513,6 +869,126 @@ func (p *Policy) MarshalJSON() ([]byte, error) {
 	type embed Policy
 	var marshaler = struct {
 		embed
+		UploadedAt *internal.DateTime `json:"uploaded_at,omitempty"`
+	}{
+		embed:      embed(*p),
+		UploadedAt: internal.NewOptionalDateTime(p.UploadedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *Policy) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Returned only when include_aggregates is true.
+var (
+	policyAggregatesFieldTotalCount = big.NewInt(1 << 0)
+	policyAggregatesFieldTotalPrice = big.NewInt(1 << 1)
+	policyAggregatesFieldByMonth    = big.NewInt(1 << 2)
+)
+
+type PolicyAggregates struct {
+	TotalCount *int     `json:"total_count,omitempty" url:"total_count,omitempty"`
+	TotalPrice *float64 `json:"total_price,omitempty" url:"total_price,omitempty"`
+	// Monthly policy counts and sales totals keyed by YYYY-MM. For issued policies (`status=1`), buckets use `uploaded_at` and fall back to `created_at`.
+	ByMonth map[string]*PolicyMonthAggregate `json:"by_month,omitempty" url:"by_month,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PolicyAggregates) GetTotalCount() *int {
+	if p == nil {
+		return nil
+	}
+	return p.TotalCount
+}
+
+func (p *PolicyAggregates) GetTotalPrice() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.TotalPrice
+}
+
+func (p *PolicyAggregates) GetByMonth() map[string]*PolicyMonthAggregate {
+	if p == nil {
+		return nil
+	}
+	return p.ByMonth
+}
+
+func (p *PolicyAggregates) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PolicyAggregates) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PolicyAggregates) SetTotalCount(totalCount *int) {
+	p.TotalCount = totalCount
+	p.require(policyAggregatesFieldTotalCount)
+}
+
+// SetTotalPrice sets the TotalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PolicyAggregates) SetTotalPrice(totalPrice *float64) {
+	p.TotalPrice = totalPrice
+	p.require(policyAggregatesFieldTotalPrice)
+}
+
+// SetByMonth sets the ByMonth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PolicyAggregates) SetByMonth(byMonth map[string]*PolicyMonthAggregate) {
+	p.ByMonth = byMonth
+	p.require(policyAggregatesFieldByMonth)
+}
+
+func (p *PolicyAggregates) UnmarshalJSON(data []byte) error {
+	type unmarshaler PolicyAggregates
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PolicyAggregates(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PolicyAggregates) MarshalJSON() ([]byte, error) {
+	type embed PolicyAggregates
+	var marshaler = struct {
+		embed
 	}{
 		embed: embed(*p),
 	}
@@ -520,7 +996,107 @@ func (p *Policy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *Policy) String() string {
+func (p *PolicyAggregates) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	policyMonthAggregateFieldCount      = big.NewInt(1 << 0)
+	policyMonthAggregateFieldTotalPrice = big.NewInt(1 << 1)
+)
+
+type PolicyMonthAggregate struct {
+	Count      *int     `json:"count,omitempty" url:"count,omitempty"`
+	TotalPrice *float64 `json:"total_price,omitempty" url:"total_price,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PolicyMonthAggregate) GetCount() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Count
+}
+
+func (p *PolicyMonthAggregate) GetTotalPrice() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.TotalPrice
+}
+
+func (p *PolicyMonthAggregate) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PolicyMonthAggregate) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PolicyMonthAggregate) SetCount(count *int) {
+	p.Count = count
+	p.require(policyMonthAggregateFieldCount)
+}
+
+// SetTotalPrice sets the TotalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PolicyMonthAggregate) SetTotalPrice(totalPrice *float64) {
+	p.TotalPrice = totalPrice
+	p.require(policyMonthAggregateFieldTotalPrice)
+}
+
+func (p *PolicyMonthAggregate) UnmarshalJSON(data []byte) error {
+	type unmarshaler PolicyMonthAggregate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PolicyMonthAggregate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PolicyMonthAggregate) MarshalJSON() ([]byte, error) {
+	type embed PolicyMonthAggregate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PolicyMonthAggregate) String() string {
 	if p == nil {
 		return "<nil>"
 	}

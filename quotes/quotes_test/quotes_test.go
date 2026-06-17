@@ -140,15 +140,34 @@ func TestQuotesListQuotesWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
+	request := &motorgosdk.GetQuoteRequestsRequest{
+		DateFrom: motorgosdk.Time(
+			motorgosdk.MustParseDate(
+				"2026-06-01",
+			),
+		),
+		DateTo: motorgosdk.Time(
+			motorgosdk.MustParseDate(
+				"2026-06-30",
+			),
+		),
+		PerPage: motorgosdk.Int(
+			10,
+		),
+		IncludeAggregates: motorgosdk.Bool(
+			true,
+		),
+	}
 	_, invocationErr := client.Quotes.ListQuotes(
 		context.TODO(),
+		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestQuotesListQuotesWithWireMock"}},
 		),
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestQuotesListQuotesWithWireMock", "GET", "/quote-requests", nil, 1)
+	VerifyRequestCount(t, "TestQuotesListQuotesWithWireMock", "GET", "/quote-requests", map[string]interface{}{"date_from": "2026-06-01", "date_to": "2026-06-30", "per_page": "10", "include_aggregates": "true"}, 1)
 }
 
 func TestQuotesRequestQuotesWithWireMock(
@@ -163,13 +182,13 @@ func TestQuotesRequestQuotesWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &motorgosdk.PostQuoteRequestsRequest{
+		Otp:     "123456",
 		OwnerID: "owner_id",
 		Phone:   "phone",
 		Birthdate: motorgosdk.MustParseDate(
 			"2023-01-15",
 		),
-		CarSequenceNumber: "car_sequence_number",
-		CarEstimatedCost:  1.1,
+		CarEstimatedCost: 1.1,
 	}
 	_, invocationErr := client.Quotes.RequestQuotes(
 		context.TODO(),

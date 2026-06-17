@@ -41,7 +41,7 @@ func (r *RawClient) ShowQuote(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := internal.EncodeURL(
 		baseURL+"/quote-requests/%v",
@@ -86,7 +86,7 @@ func (r *RawClient) DeleteQuote(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := internal.EncodeURL(
 		baseURL+"/quote-requests/%v",
@@ -124,20 +124,28 @@ func (r *RawClient) DeleteQuote(
 
 func (r *RawClient) ListQuotes(
 	ctx context.Context,
+	request *motorgosdk.GetQuoteRequestsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*motorgosdk.GetQuoteRequestsResponse], error) {
+) (*core.Response[*motorgosdk.PaginatedQuoteResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := baseURL + "/quote-requests"
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *motorgosdk.GetQuoteRequestsResponse
+	var response *motorgosdk.PaginatedQuoteResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -150,12 +158,13 @@ func (r *RawClient) ListQuotes(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(motorgosdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*motorgosdk.GetQuoteRequestsResponse]{
+	return &core.Response[*motorgosdk.PaginatedQuoteResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -171,13 +180,16 @@ func (r *RawClient) RequestQuotes(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := baseURL + "/quote-requests"
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	if request.AcceptLanguage != nil {
+		headers.Add("Accept-Language", string(*request.AcceptLanguage))
+	}
 	headers.Add("Content-Type", "application/json")
 	var response *motorgosdk.QuoteResponse
 	raw, err := r.caller.Call(

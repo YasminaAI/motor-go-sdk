@@ -110,15 +110,33 @@ func (b *BadRequestErrorBody) String() string {
 }
 
 var (
-	companyQuoteFieldCompanyName = big.NewInt(1 << 0)
-	companyQuoteFieldPrices      = big.NewInt(1 << 1)
-	companyQuoteFieldBenefits    = big.NewInt(1 << 2)
+	companyQuoteFieldCompanyName            = big.NewInt(1 << 0)
+	companyQuoteFieldCompanyNameAr          = big.NewInt(1 << 1)
+	companyQuoteFieldType                   = big.NewInt(1 << 2)
+	companyQuoteFieldInsuranceTypeDisplay   = big.NewInt(1 << 3)
+	companyQuoteFieldInsuranceTypeDisplayAr = big.NewInt(1 << 4)
+	companyQuoteFieldCompanyLogoURL         = big.NewInt(1 << 5)
+	companyQuoteFieldSquareCompanyLogoURL   = big.NewInt(1 << 6)
+	companyQuoteFieldPrices                 = big.NewInt(1 << 7)
+	companyQuoteFieldBenefits               = big.NewInt(1 << 8)
 )
 
 type CompanyQuote struct {
-	CompanyName *string       `json:"company_name,omitempty" url:"company_name,omitempty"`
-	Prices      []*QuotePrice `json:"prices,omitempty" url:"prices,omitempty"`
-	Benefits    []*Benefit    `json:"benefits,omitempty" url:"benefits,omitempty"`
+	CompanyName *string `json:"company_name,omitempty" url:"company_name,omitempty"`
+	// Arabic name of the insurance company. Use this field instead of `company_name` when rendering Arabic UIs.
+	CompanyNameAr *string `json:"company_name_ar,omitempty" url:"company_name_ar,omitempty"`
+	// Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`.
+	Type *CompanyQuoteType `json:"type,omitempty" url:"type,omitempty"`
+	// The insurance type label exactly as the insurance provider intends it to be displayed. While `type` normalises all non-TPL / non-Comprehensive values into `TPL +`, this field preserves the original provider string (e.g. "TPL Plus", "Third Party Plus") and should be shown in the UI wherever the provider's own wording is preferred.
+	InsuranceTypeDisplay *string `json:"insurance_type_display,omitempty" url:"insurance_type_display,omitempty"`
+	// Arabic translation of `insurance_type_display`. Use this field for Arabic UIs. Falls back to the English value for provider-specific types that do not have a translation.
+	InsuranceTypeDisplayAr *string `json:"insurance_type_display_ar,omitempty" url:"insurance_type_display_ar,omitempty"`
+	// CDN URL for the insurance company's logo.
+	CompanyLogoURL *string `json:"company_logo_url,omitempty" url:"company_logo_url,omitempty"`
+	// CDN URL for the insurance company's square logo.
+	SquareCompanyLogoURL *string       `json:"square_company_logo_url,omitempty" url:"square_company_logo_url,omitempty"`
+	Prices               []*QuotePrice `json:"prices,omitempty" url:"prices,omitempty"`
+	Benefits             []*Benefit    `json:"benefits,omitempty" url:"benefits,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -132,6 +150,48 @@ func (c *CompanyQuote) GetCompanyName() *string {
 		return nil
 	}
 	return c.CompanyName
+}
+
+func (c *CompanyQuote) GetCompanyNameAr() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CompanyNameAr
+}
+
+func (c *CompanyQuote) GetType() *CompanyQuoteType {
+	if c == nil {
+		return nil
+	}
+	return c.Type
+}
+
+func (c *CompanyQuote) GetInsuranceTypeDisplay() *string {
+	if c == nil {
+		return nil
+	}
+	return c.InsuranceTypeDisplay
+}
+
+func (c *CompanyQuote) GetInsuranceTypeDisplayAr() *string {
+	if c == nil {
+		return nil
+	}
+	return c.InsuranceTypeDisplayAr
+}
+
+func (c *CompanyQuote) GetCompanyLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CompanyLogoURL
+}
+
+func (c *CompanyQuote) GetSquareCompanyLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SquareCompanyLogoURL
 }
 
 func (c *CompanyQuote) GetPrices() []*QuotePrice {
@@ -167,6 +227,48 @@ func (c *CompanyQuote) require(field *big.Int) {
 func (c *CompanyQuote) SetCompanyName(companyName *string) {
 	c.CompanyName = companyName
 	c.require(companyQuoteFieldCompanyName)
+}
+
+// SetCompanyNameAr sets the CompanyNameAr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyQuote) SetCompanyNameAr(companyNameAr *string) {
+	c.CompanyNameAr = companyNameAr
+	c.require(companyQuoteFieldCompanyNameAr)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyQuote) SetType(type_ *CompanyQuoteType) {
+	c.Type = type_
+	c.require(companyQuoteFieldType)
+}
+
+// SetInsuranceTypeDisplay sets the InsuranceTypeDisplay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyQuote) SetInsuranceTypeDisplay(insuranceTypeDisplay *string) {
+	c.InsuranceTypeDisplay = insuranceTypeDisplay
+	c.require(companyQuoteFieldInsuranceTypeDisplay)
+}
+
+// SetInsuranceTypeDisplayAr sets the InsuranceTypeDisplayAr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyQuote) SetInsuranceTypeDisplayAr(insuranceTypeDisplayAr *string) {
+	c.InsuranceTypeDisplayAr = insuranceTypeDisplayAr
+	c.require(companyQuoteFieldInsuranceTypeDisplayAr)
+}
+
+// SetCompanyLogoURL sets the CompanyLogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyQuote) SetCompanyLogoURL(companyLogoURL *string) {
+	c.CompanyLogoURL = companyLogoURL
+	c.require(companyQuoteFieldCompanyLogoURL)
+}
+
+// SetSquareCompanyLogoURL sets the SquareCompanyLogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyQuote) SetSquareCompanyLogoURL(squareCompanyLogoURL *string) {
+	c.SquareCompanyLogoURL = squareCompanyLogoURL
+	c.require(companyQuoteFieldSquareCompanyLogoURL)
 }
 
 // SetPrices sets the Prices field and marks it as non-optional;
@@ -223,6 +325,29 @@ func (c *CompanyQuote) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Normalised insurance category used to group and filter quotes. Always one of `TPL`, `TPL +`, or `Comprehensive`.
+type CompanyQuoteType string
+
+const (
+	CompanyQuoteTypeTpl           CompanyQuoteType = "TPL"
+	CompanyQuoteTypeComprehensive CompanyQuoteType = "Comprehensive"
+)
+
+func NewCompanyQuoteTypeFromString(s string) (CompanyQuoteType, error) {
+	switch s {
+	case "TPL":
+		return CompanyQuoteTypeTpl, nil
+	case "Comprehensive":
+		return CompanyQuoteTypeComprehensive, nil
+	}
+	var t CompanyQuoteType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyQuoteType) Ptr() *CompanyQuoteType {
+	return &c
 }
 
 var (
@@ -323,6 +448,122 @@ func (e *Error) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	paginationLinkFieldURL    = big.NewInt(1 << 0)
+	paginationLinkFieldLabel  = big.NewInt(1 << 1)
+	paginationLinkFieldActive = big.NewInt(1 << 2)
+)
+
+type PaginationLink struct {
+	URL    *string `json:"url,omitempty" url:"url,omitempty"`
+	Label  *string `json:"label,omitempty" url:"label,omitempty"`
+	Active *bool   `json:"active,omitempty" url:"active,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaginationLink) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PaginationLink) GetLabel() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Label
+}
+
+func (p *PaginationLink) GetActive() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Active
+}
+
+func (p *PaginationLink) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaginationLink) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginationLink) SetURL(url *string) {
+	p.URL = url
+	p.require(paginationLinkFieldURL)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginationLink) SetLabel(label *string) {
+	p.Label = label
+	p.require(paginationLinkFieldLabel)
+}
+
+// SetActive sets the Active field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaginationLink) SetActive(active *bool) {
+	p.Active = active
+	p.require(paginationLinkFieldActive)
+}
+
+func (p *PaginationLink) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaginationLink
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaginationLink(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaginationLink) MarshalJSON() ([]byte, error) {
+	type embed PaginationLink
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaginationLink) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 var (

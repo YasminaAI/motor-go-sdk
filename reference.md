@@ -94,7 +94,7 @@ client.Quotes.DeleteQuote(
 </dl>
 </details>
 
-<details><summary><code>client.Quotes.ListQuotes() -> *motorgosdk.GetQuoteRequestsResponse</code></summary>
+<details><summary><code>client.Quotes.ListQuotes() -> *motorgosdk.PaginatedQuoteResponse</code></summary>
 <dl>
 <dd>
 
@@ -107,11 +107,69 @@ client.Quotes.DeleteQuote(
 <dd>
 
 ```go
+request := &motorgosdk.GetQuoteRequestsRequest{
+        DateFrom: motorgosdk.Time(
+            motorgosdk.MustParseDate(
+                "2026-06-01",
+            ),
+        ),
+        DateTo: motorgosdk.Time(
+            motorgosdk.MustParseDate(
+                "2026-06-30",
+            ),
+        ),
+        PerPage: motorgosdk.Int(
+            10,
+        ),
+        IncludeAggregates: motorgosdk.Bool(
+            true,
+        ),
+    }
 client.Quotes.ListQuotes(
         context.TODO(),
+        request,
     )
 }
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**dateFrom:** `*time.Time` — Inclusive lower bound for quote request creation date.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dateTo:** `*time.Time` — Inclusive upper bound for quote request creation date.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**perPage:** `*int` — Number of quote requests to return per page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeAggregates:** `*bool` — When true, includes quote request totals and monthly buckets for the filtered result set.
+    
 </dd>
 </dl>
 </dd>
@@ -151,12 +209,12 @@ The Quote IDs can be used later to issue a policy
 
 ```go
 request := &motorgosdk.PostQuoteRequestsRequest{
+        Otp: "123456",
         OwnerID: "owner_id",
         Phone: "phone",
         Birthdate: motorgosdk.MustParseDate(
             "2023-01-15",
         ),
-        CarSequenceNumber: "car_sequence_number",
         CarEstimatedCost: 1.1,
     }
 client.Quotes.RequestQuotes(
@@ -174,6 +232,22 @@ client.Quotes.RequestQuotes(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**acceptLanguage:** `*motorgosdk.PostQuoteRequestsRequestAcceptLanguage` — Set to ar to receive Arabic-localized quote content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**otp:** `string` — The OTP received by the customer from the Request OTP API
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -210,7 +284,15 @@ client.Quotes.RequestQuotes(
 <dl>
 <dd>
 
-**carSequenceNumber:** `string` — Car sequence number must be 8 or 9 digits
+**carSequenceNumber:** `*string` — Car sequence number must be 8 or 9 digits
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customNumber:** `*string` — Custom car number between 1000000 and 9999999999 (for newly imported cars)
     
 </dd>
 </dl>
@@ -332,7 +414,7 @@ client.Policies.ShowPolicy(
 </dl>
 </details>
 
-<details><summary><code>client.Policies.ListPolicies() -> []*motorgosdk.Policy</code></summary>
+<details><summary><code>client.Policies.ListPolicies() -> *motorgosdk.PaginatedPolicyResponse</code></summary>
 <dl>
 <dd>
 
@@ -359,7 +441,21 @@ Listing requested policies
 <dd>
 
 ```go
-request := &motorgosdk.GetPoliciesRequest{}
+request := &motorgosdk.GetPoliciesRequest{
+        DateFrom: motorgosdk.Time(
+            motorgosdk.MustParseDate(
+                "2026-06-01",
+            ),
+        ),
+        DateTo: motorgosdk.Time(
+            motorgosdk.MustParseDate(
+                "2026-06-30",
+            ),
+        ),
+        IncludeAggregates: motorgosdk.Bool(
+            true,
+        ),
+    }
 client.Policies.ListPolicies(
         context.TODO(),
         request,
@@ -455,6 +551,30 @@ client.Policies.ListPolicies(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**dateFrom:** `*time.Time` — Inclusive lower bound for the policy date. For issued policies (`status=1`), this filters by `uploaded_at` (the provider policy issue timestamp) and falls back to `created_at` when `uploaded_at` is unavailable. For other statuses, this filters by `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dateTo:** `*time.Time` — Inclusive upper bound for the policy date. For issued policies (`status=1`), this filters by `uploaded_at` (the provider policy issue timestamp) and falls back to `created_at` when `uploaded_at` is unavailable. For other statuses, this filters by `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeAggregates:** `*bool` — When true, includes policy totals, total price, and monthly buckets for the filtered result set.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -491,6 +611,7 @@ For issuing a new policy
 
 ```go
 request := &motorgosdk.PostPoliciesRequest{
+        Otp: "123456",
         QuoteRequestID: 123,
         QuoteReferenceID: "550e8400-e29b-41d4-a716-446655440000",
         QuotePriceID: "550e8400-e29b-41d4-a716-446655440001",
@@ -510,6 +631,14 @@ client.Policies.IssuePolicy(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**otp:** `string` — The OTP received by the customer from the Issue OTP API
+    
+</dd>
+</dl>
 
 <dl>
 <dd>

@@ -41,7 +41,7 @@ func (r *RawClient) RequestOtpForQuoteVerification(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := baseURL + "/quote-otp"
 	headers := internal.MergeHeaders(
@@ -83,7 +83,7 @@ func (r *RawClient) RequestOtpForIssuingPolicy(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := baseURL + "/issue-otp"
 	headers := internal.MergeHeaders(

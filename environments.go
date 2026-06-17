@@ -7,7 +7,9 @@ package api
 // RequestOption to override the client's default environment,
 // if any.
 var Environments = struct {
-	Default string
+	Sandbox    string
+	Production string
 }{
-	Default: "https://staging.yasmina.ai/api/v1/car-comp",
+	Sandbox:    "https://sandbox.yasmina.ai/api/v1/car-comp",
+	Production: "https://production.yasmina.ai/api/v1/car-comp",
 }

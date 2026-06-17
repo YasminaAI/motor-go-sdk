@@ -41,7 +41,7 @@ func (r *RawClient) ShowPolicy(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := internal.EncodeURL(
 		baseURL+"/policies/%v",
@@ -80,12 +80,12 @@ func (r *RawClient) ListPolicies(
 	ctx context.Context,
 	request *motorgosdk.GetPoliciesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[[]*motorgosdk.Policy], error) {
+) (*core.Response[*motorgosdk.PaginatedPolicyResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := baseURL + "/policies"
 	queryParams, err := internal.QueryValues(request)
@@ -99,7 +99,7 @@ func (r *RawClient) ListPolicies(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response []*motorgosdk.Policy
+	var response *motorgosdk.PaginatedPolicyResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -118,7 +118,7 @@ func (r *RawClient) ListPolicies(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[[]*motorgosdk.Policy]{
+	return &core.Response[*motorgosdk.PaginatedPolicyResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -134,7 +134,7 @@ func (r *RawClient) IssuePolicy(
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
-		"https://staging.yasmina.ai/api/v1/car-comp",
+		"https://sandbox.yasmina.ai/api/v1/car-comp",
 	)
 	endpointURL := baseURL + "/policies"
 	headers := internal.MergeHeaders(

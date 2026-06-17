@@ -114,7 +114,21 @@ func TestPoliciesListPoliciesWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &motorgosdk.GetPoliciesRequest{}
+	request := &motorgosdk.GetPoliciesRequest{
+		DateFrom: motorgosdk.Time(
+			motorgosdk.MustParseDate(
+				"2026-06-01",
+			),
+		),
+		DateTo: motorgosdk.Time(
+			motorgosdk.MustParseDate(
+				"2026-06-30",
+			),
+		),
+		IncludeAggregates: motorgosdk.Bool(
+			true,
+		),
+	}
 	_, invocationErr := client.Policies.ListPolicies(
 		context.TODO(),
 		request,
@@ -124,7 +138,7 @@ func TestPoliciesListPoliciesWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPoliciesListPoliciesWithWireMock", "GET", "/policies", nil, 1)
+	VerifyRequestCount(t, "TestPoliciesListPoliciesWithWireMock", "GET", "/policies", map[string]interface{}{"date_from": "2026-06-01", "date_to": "2026-06-30", "include_aggregates": "true"}, 1)
 }
 
 func TestPoliciesIssuePolicyWithWireMock(
@@ -139,6 +153,7 @@ func TestPoliciesIssuePolicyWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &motorgosdk.PostPoliciesRequest{
+		Otp:              "123456",
 		QuoteRequestID:   123,
 		QuoteReferenceID: "550e8400-e29b-41d4-a716-446655440000",
 		QuotePriceID:     "550e8400-e29b-41d4-a716-446655440001",
