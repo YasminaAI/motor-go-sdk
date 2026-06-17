@@ -4,7 +4,7 @@ package api
 
 import (
 	json "encoding/json"
-	core "github.com/yasminaai/motor-go-sdk/core"
+	core "github.com/YasminaAI/motor-go-sdk/core"
 )
 
 // Invalid request or missing parameters

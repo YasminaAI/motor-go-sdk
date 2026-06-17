@@ -3,12 +3,12 @@
 package client
 
 import (
-	core "github.com/yasminaai/motor-go-sdk/core"
-	internal "github.com/yasminaai/motor-go-sdk/internal"
-	option "github.com/yasminaai/motor-go-sdk/option"
-	otps "github.com/yasminaai/motor-go-sdk/otps"
-	policies "github.com/yasminaai/motor-go-sdk/policies"
-	quotes "github.com/yasminaai/motor-go-sdk/quotes"
+	core "github.com/YasminaAI/motor-go-sdk/core"
+	internal "github.com/YasminaAI/motor-go-sdk/internal"
+	option "github.com/YasminaAI/motor-go-sdk/option"
+	otps "github.com/YasminaAI/motor-go-sdk/otps"
+	policies "github.com/YasminaAI/motor-go-sdk/policies"
+	quotes "github.com/YasminaAI/motor-go-sdk/quotes"
 )
 
 type Client struct {

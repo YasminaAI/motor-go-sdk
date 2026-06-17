@@ -4,12 +4,12 @@
   "generatorVersion": "1.45.2",
   "generatorConfig": {
     "module": {
-      "path": "github.com/yasminaai/motor-go-sdk"
+      "path": "github.com/YasminaAI/motor-go-sdk"
     }
   },
-  "originGitCommit": "4e0a1a1695edca7bf871a85b62feb8c9292f583c",
+  "originGitCommit": "1171827e35d8daf1b40dc48508b76ef52257a491",
   "originGitCommitIsDirty": false,
   "invokedBy": "manual",
-  "requestedVersion": "0.0.45",
-  "sdkVersion": "v0.0.45"
+  "requestedVersion": "0.0.47",
+  "sdkVersion": "v0.0.47"
 }

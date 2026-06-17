@@ -10,10 +10,10 @@ import (
 	os "os"
 	testing "testing"
 
+	motorgosdk "github.com/YasminaAI/motor-go-sdk"
+	client "github.com/YasminaAI/motor-go-sdk/client"
+	option "github.com/YasminaAI/motor-go-sdk/option"
 	require "github.com/stretchr/testify/require"
-	motorgosdk "github.com/yasminaai/motor-go-sdk"
-	client "github.com/yasminaai/motor-go-sdk/client"
-	option "github.com/yasminaai/motor-go-sdk/option"
 )
 
 func VerifyRequestCount(

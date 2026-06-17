@@ -3,8 +3,8 @@
 package client
 
 import (
+	option "github.com/YasminaAI/motor-go-sdk/option"
 	assert "github.com/stretchr/testify/assert"
-	option "github.com/yasminaai/motor-go-sdk/option"
 	http "net/http"
 	testing "testing"
 	time "time"
