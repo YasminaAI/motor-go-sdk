@@ -65,8 +65,8 @@ func (r *RequestOptions) cloneHeader() http.Header {
 	headers := r.HTTPHeader.Clone()
 	headers.Set("X-Fern-Language", "Go")
 	headers.Set("X-Fern-SDK-Name", "github.com/yasminaai/motor-go-sdk")
-	headers.Set("X-Fern-SDK-Version", "v0.0.42")
-	headers.Set("User-Agent", "github.com/yasminaai/motor-go-sdk/0.0.42")
+	headers.Set("X-Fern-SDK-Version", "v0.0.45")
+	headers.Set("User-Agent", "github.com/yasminaai/motor-go-sdk/0.0.45")
 	return headers
 }
 
